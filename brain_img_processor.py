@@ -1,4 +1,9 @@
 import SimpleITK
+from skimage.measure import label, regionprops
+
+from scipy import ndimage as ndi
+from skimage.filters import rank, gaussian
+from skimage.morphology import watershed, disk
 
 class BrainData:
     '''
@@ -47,7 +52,6 @@ class BrainData:
 # HELPER FUNCTIONS
 ############################################
 
-from skimage.measure import label, regionprops
 
 def isolate_brain(img_array):
 
@@ -88,13 +92,37 @@ def isolate_brain(img_array):
 
     return result
 
-# TODO implement this
-# def extract_img(img, coord):
+# TODO need to change values for denoising to get optimum 
+# values (we need to decrease the number of regions detected to make it faster)
 
 def segment(brain_img):
 
-    
+    '''
+    Segmenting regions of the brain using watershed function
+    '''
+
+    # denoise the image
+    denoised = gaussian(brain_img)
+
+    # get the low gradient
+    markers = rank.gradient(denoised, disk(3)) < 1
+
+    markers = ndi.label(markers)[0]
+
+    # get the local gradient
+    gradient = rank.gradient(denoised, disk(1))
+
+    # process the watershed
+    labels = watershed(gradient, markers)
+
+    return labels
+
+def check_brain(brain_img):
+
     return None
 
+def get_tumor_region(label, image):
+
+    return None
 
 
