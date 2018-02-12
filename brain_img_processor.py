@@ -5,6 +5,8 @@ from scipy import ndimage as ndi
 from skimage.filters import rank, gaussian
 from skimage.morphology import watershed, disk
 
+import numpy as np
+
 class BrainData:
     '''
     Class to store the data of MRI image and provide function to easily
@@ -100,12 +102,8 @@ def segment(brain_img):
     '''
     Segmenting regions of the brain using watershed function
     '''
-
-    # denoise the image
-    denoised = gaussian(brain_img)
-
     # get the low gradient
-    markers = rank.gradient(denoised, disk(3)) < 1
+    markers = rank.gradient(brain_img, disk(5)) < 20
 
     markers = ndi.label(markers)[0]
 
@@ -118,11 +116,64 @@ def segment(brain_img):
     return labels
 
 def check_brain(brain_img):
+    '''
+    Use gray value histogram of image to check whether tumor exists
 
+    Returns True if tumor exists
+    else returns false
+    '''
+    histogram = np.histogram(brain_image,range=range(256))
     return None
 
 def get_tumor_region(label, image):
 
     return None
 
+from skimage.restoration import denoise_nl_means, estimate_sigma, denoise_tv_chambolle
 
+def denoise(image):
+
+    '''implement a specific denoinising algorithm'''
+    sigma = 0.110
+
+    # estimate the noise standard deviation from the noisy image
+    sigma_est = np.mean(estimate_sigma(image, multichannel=False))
+    print( "Estimated noise standard deviation ={}".format(sigma_est))
+
+    patch_kw = dict(patch_size=5, patch_distance=6, multichannel=False)
+
+    # slow algorith, sigma provided
+
+    denoise = denoise_nl_means(image, h=0.8 * sigma_est, fast_mode=False, **patch_kw)
+    denoise = denoise.astype(dtype="uint16")
+
+    print("dimension")
+    print(denoise.ndim)
+    return denoise
+
+def normalize_255(image):
+
+    non_zero = image[image>0]
+
+    min = np.amin(non_zero)
+    max = np.amax(non_zero)
+    
+    normalized = (image-min) / (max-min) * 255
+
+    normalized = np.clip(normalized, a_min=0, a_max=255)
+
+    normalized = normalized.astype("uint8")
+
+    #print(normalized)
+    
+    return normalized
+
+def equalize(image):
+
+
+    h = np.histogram(image, bins=256)[0]
+    H = np.cumsum(h) / float(np.sum(h))
+    print(h.shape)
+    print(H.shape)
+    e = np.floor(H[image.flatten()] * 255.)
+    return e.reshape(image.shape).astype('uint8')
