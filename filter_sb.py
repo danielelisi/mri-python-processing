@@ -7,7 +7,7 @@ from skimage.morphology import disk
 
 from scipy import ndimage as ndi
 from skimage.morphology import watershed
-
+from smooth_curve import smooth_curve
 brain = BrainData('data/brain.mha')
 
 slice_top = brain.get_slice(BrainData.TOP_PROF, 120)
@@ -102,7 +102,14 @@ ax2[1,3].set_title("watershed")
 
 brain_vec1 = normal1.ravel()
 brain_vec1 = brain_vec1[brain_vec1 > 0]
-ax3[0,0].hist(brain_vec1, bins=range(256))
+n , bins, patches = ax3[0,0].hist(brain_vec1, bins=range(256))
 
+# taking the values from the histogram and applying a floating point average to them to smooth curve for analysis
+floating_point= 20
+x_data = bins[1:]
+y_data = n
+new_curve = smooth_curve(20, y_data,x_data)
+
+plt.plot(new_curve[0],new_curve[1])
 plt.tight_layout()
 plt.show()
