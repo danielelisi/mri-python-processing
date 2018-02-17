@@ -8,7 +8,7 @@ from skimage.morphology import disk
 from scipy import ndimage as ndi
 from skimage.morphology import watershed
 from smooth_curve import smooth_curve
-brain = BrainData('data/brain.mha')
+brain = BrainData('../brain.mha')
 
 slice_top = brain.get_slice(BrainData.TOP_PROF, 120)
 slice_side = brain.get_slice(BrainData.SIDE_PROF, 100)

@@ -1,16 +1,6 @@
 from brain_img_processor import BrainData, isolate_brain, segment, denoise, normalize_255, equalize
-import numpy as np
 import matplotlib.pyplot as plt #library to view images
-from nilearn import plotting
-from skimage.filters import rank, threshold_otsu
-from skimage.morphology import disk, closing, square
-
-from skimage.segmentation import clear_border
-import matplotlib.patches as mpatches
-
 from skimage.measure import label, regionprops
-
-from skimage.exposure import histogram
 
 brain_data = BrainData('data/brain.mha')
 
@@ -18,9 +8,6 @@ print(brain_data.get_dimensions())
 
 slice_top = brain_data.get_slice(BrainData.TOP_PROF, 120)
 slice_front = brain_data.get_slice(BrainData.SIDE_PROF, 100)
-
-# plt.imshow(slice_top, cmap="gray")
-# plt.imshow(slice_front, cmap="gray")
 
 brain_image = slice_front;
 ########################################################
@@ -52,16 +39,6 @@ regions = regionprops(labels, normalized)
 ax[1, 1].imshow(normalized, cmap="gray")
 ax[1, 1].imshow(segmented, cmap=plt.cm.spectral, alpha=.5)
 ax[1, 1].set_title("segmented")
-
-
-# for region in regions:
-#     print(region.intensity_image.mean())
-#     if region.intensity_image.mean() > 80:
-
-#         minr, minc, maxr, maxc = region.bbox
-#         rect = mpatches.Rectangle((minc, minr), maxc - minc, maxr - minr,
-#                             fill=False, edgecolor='red', linewidth=2)
-#         ax[1, 1].add_patch(rect)
 
 denoised = denoise(equalized)
 

@@ -1,144 +1,116 @@
-from tkinter import *
-import matplotlib as mp
-mp.use("TkAgg")
+import matplotlib
+import open_image as oi
 
-# root = Tk()
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.figure import Figure
 
-# topFrame = Frame(root)
-# topFrame.pack()
-# bottomFrame = Frame(root)
-# bottomFrame.pack(side=BOTTOM)
+import tkinter as tk
+from tkinter import ttk
 
-# button1 = Button(topFrame, text='Button 1', fg='red')
-# button2 = Button(topFrame, text='Button 2', fg='blue')
-# button3 = Button(topFrame, text='Button 3', fg='green')
-# button4 = Button(bottomFrame, text='Button 4', fg='purple')
+LARGE_FONT = ("Verdana", 12)
 
-# button1.pack(side=LEFT)
-# button2.pack(side=LEFT)
-# button3.pack(side=LEFT)
-# button4.pack(side=BOTTOM)
 
-# root.mainloop()
+class MRIApp(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
 
-#
-# Part 3 - Fitting Widgets in The Layout
-#
+        tk.Tk.iconbitmap(self, default="brain.ico")
+        tk.Tk.wm_title(self, "MRI App")
 
-# root = Tk()
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
-# one = Label(root, text='One', bg='red', fg='white')
-# one.pack()
+        self.frames = {}
 
-# two = Label(root, text='Two', bg='green', fg='black')
-# two.pack(fill=X)
+        for F in (StartPage, PageOne, PageTwo, PageThree):
+            frame = F(container, self)
 
-# three = Label(root, text='Three', bg='blue', fg='white')
-# two.pack(side=LEFT, fill=Y)
+            self.frames[F] = frame
 
-# root.mainloop()
+            frame.grid(row=0, column=0, sticky="nsew")
 
-#
-# Part 4 - Grid Layout
-#
+        self.show_frame(StartPage)
 
-# root = Tk()
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
 
-# label_1 = Label(root, text='Name')
-# label_2 = Label(root, text='Password')
-# entry_1 = Entry(root)
-# entry_2 = Entry(root)
 
-# label_1.grid(row=0)
-# label_2.grid(row=1)
+class StartPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Start Page", font=LARGE_FONT)
+        label.pack(pady=10, padx=10)
 
-# entry_1.grid(row=0, column=1)
-# entry_2.grid(row=1, column=1)
+        button = ttk.Button(self, text="Visit Page 1",
+                            command=lambda: controller.show_frame(PageOne))
+        button.pack()
 
-# root.mainloop()
+        button2 = ttk.Button(self, text="Visit Page 2",
+                             command=lambda: controller.show_frame(PageTwo))
+        button2.pack()
 
-#
-# Part 5 - More on Grid Layout
-#
+        button3 = ttk.Button(self, text="Graph Page",
+                             command=lambda: controller.show_frame(PageThree))
+        button3.pack()
 
-# root = Tk()
 
-# label_1 = Label(root, text='Name')
-# label_2 = Label(root, text='Password')
-# entry_1 = Entry(root)
-# entry_2 = Entry(root)
+class PageOne(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Page One!!!", font=LARGE_FONT)
+        label.pack(pady=10, padx=10)
 
-# label_1.grid(row=0, sticky=E)     #Sticky doesn't use L,R,T,B but N,E,S,W
-# label_2.grid(row=1, sticky=E)
+        button1 = ttk.Button(self, text="Back to Home",
+                             command=lambda: controller.show_frame(StartPage))
+        button1.pack()
 
-# entry_1.grid(row=0, column=1)
-# entry_2.grid(row=1, column=1)
+        button2 = ttk.Button(self, text="Page Two",
+                             command=lambda: controller.show_frame(PageTwo))
+        button2.pack()
 
-# c = Checkbutton(root, text='Keep me logged in')
-# c.grid(columnspan=2)
 
-# root.mainloop()
+class PageTwo(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Page Two!!!", font=LARGE_FONT)
+        label.pack(pady=10, padx=10)
 
-#
-# Part 6 - Binding Functions to Layouts
-#
+        button1 = ttk.Button(self, text="Back to Home",
+                             command=lambda: controller.show_frame(StartPage))
+        button1.pack()
 
-# root = Tk()
+        button2 = ttk.Button(self, text="Page One",
+                             command=lambda: controller.show_frame(PageOne))
+        button2.pack()
 
-# def printName(event # one way to do an event):
-#     print('Hello my name is Alex!')
 
-# button_1 = Button(root, text='Print my name', command=printName # another way to do event)
-# button_1.bind('<Button-1>', printName)
-# button_1.pack()
+class PageThree(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Graph Page!", font=LARGE_FONT)
+        label.pack(pady=10, padx=10)
 
-# root.mainloop()p
+        button1 = ttk.Button(self, text="Back to Home",
+                             command=lambda: controller.show_frame(StartPage))
+        button1.pack()
 
-#
-# Part 7 - Mouse Click Events
-#
+        f = Figure(figsize=(5, 5), dpi=100)
+        a = f.add_subplot(111)
+        r = oi.run("../../brain.mha")
+        a.plot(r[1], r[0])
 
-# root = Tk()
+        canvas = FigureCanvasTkAgg(f, self)
+        canvas.show()
+        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
-# def leftClick(event):
-#     print('Left')
+        toolbar = NavigationToolbar2TkAgg(canvas, self)
+        toolbar.update()
+        canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-# def middleClick(event):
-#     print('Middle')
 
-# def rightClick(event):
-#     print('Right')
-
-# frame = Frame(root, width=300, height=250)
-# frame.bind('<Button-1>', leftClick)
-# frame.bind('<Button-2>', middleClick)
-# frame.bind('<Button-3>', rightClick)
-# frame.pack()
-
-# root.mainloop()
-
-#
-# Part 8 - Using Classes
-#
-
-class AlexButtons:
-
-    def __init__(self, master):
-        frame = Frame(master)
-        frame.pack()
-
-        self.printButton = Button(frame, text='Print Message', command=self.printMessage)
-        self.printButton.pack(side=LEFT)
-
-        self.quitButton = Button(frame, text='Quit', command=frame.quit)
-        self.quitButton.pack(side=LEFT)
-
-    def printMessage(self):
-        print('Wow, this actually works!')
-
-root = Tk()
-
-b = AlexButtons(root)
-
-root.mainloop()
-
+app = MRIApp()
+app.mainloop()
