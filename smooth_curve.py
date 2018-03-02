@@ -1,15 +1,47 @@
 import numpy
 
-def smooth_curve(float_num, y_data_arr, x_data_arr):
-
-
+def smooth_curve(moving_num, x_data_arr, y_data_arr):
     smoothed_y = []
-    shortened_x = x_data_arr[:x_data_arr.size - float_num]
-    for i in range(y_data_arr.size - float_num):
-        current_point = sum(y_data_arr[i:i+float_num])/float_num
+    shortened_x = x_data_arr[moving_num:]
+    for i in range(y_data_arr.size - moving_num):
+        # going through the data points in reverse because we want the end data points more then the start points and this method
+        # loses a data point for each increment of moving_num 
+        current_point = sum(y_data_arr[-(i+moving_num+1):-(i+1)])/moving_num
         smoothed_y.append(current_point)
+    # flip the final points back to the original order
+    return [shortened_x[::-1], smoothed_y]
 
-    return [shortened_x , smoothed_y]
+def gradient_check(x_values, y_values):
+    peak_count = 0
+    pos_grad = False
+    peak_values = []
+    for i in range(y_values.size - 1):
+        # check if the next value - current value is positive if it is then its a pos gradient and there will be a peak
+        # using 1.1 as a ratio instead of 1 to make it ignore small bumps
+        if (y_values[(i+1)] / y_values[i]) >= 1 :
+            # only tallies if not already added one
+            if (not pos_grad):
+                if (y_values[(i+1)] / y_values[i]) >= 1.05:
+                    pos_grad = True
+                    peak_count +=1
+        else:
+            # sets to false when a decline starts so you can add another to peak_count if a new incline is detected
+            if (pos_grad):
+                # these are not magic numbers they are calculated bullshit numbers that kinda work
+                if 0.985 >=(y_values[(i+1)] / y_values[i]) >= 0.95:
+                    if(x_values[i+1] > 100):
+                        print(y_values[(i+1)] / y_values[i])
+                        peak_values.append(x_values[i+1])
+                        pos_grad = False
+                    else:
+                        pos_grad = False
+                else:
+                    pos_grad = False
+    if (peak_count > 1):
+        return True , peak_values
+    else:
+        return False , peak_values  
+
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.

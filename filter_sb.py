@@ -109,8 +109,8 @@ brain_vec1 = brain_data.ravel()
 brain_vec1 = brain_vec1[brain_vec1 > 0]
 n , bins, patches = ax3[0,0].hist(brain_vec1, bins=range(brain_vec1.max()+1))
 
-# taking the values from the histogram and applying a floating point average to them to smooth curve for analysis
-floating_point= 20
+# taking the values from the histogram and applying a moving point average to them to smooth curve for analysis
+moving_point= 20
 x_data = bins[1:]
 y_data = n
 
