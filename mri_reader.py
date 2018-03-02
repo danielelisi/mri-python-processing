@@ -12,7 +12,7 @@ from skimage.measure import label, regionprops
 
 from skimage.exposure import histogram
 
-brain_data = BrainData('data/brain2.mha')
+brain_data = BrainData('data/brain.mha')
 
 print(brain_data.get_dimensions())
 

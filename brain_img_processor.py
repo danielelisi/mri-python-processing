@@ -122,7 +122,7 @@ def check_brain(brain_img):
     Returns True if tumor exists
     else returns false
     '''
-    histogram = np.histogram(brain_image,range=range(256))
+    histogram = np.histogram(brain_img,range=range(256))
     return None
 
 def get_tumor_region(label, image):
