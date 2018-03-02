@@ -7,13 +7,18 @@ from skimage.morphology import disk
 
 from scipy import ndimage as ndi
 from skimage.morphology import watershed
-from smooth_curve import smooth_curve
+from smooth_curve import smooth_curve, smooth
+
+from scipy import signal
+
+
 brain = BrainData('data/brain.mha')
 
 slice_top = brain.get_slice(BrainData.TOP_PROF, 120)
 slice_side = brain.get_slice(BrainData.SIDE_PROF, 100)
+slice_front = brain.get_slice(BrainData.FRONT_PROF, 117)
 
-isolated_brain = isolate_brain(slice_side)
+isolated_brain = isolate_brain(slice_front)
 brain_data = isolated_brain['data']
 
 #first row sequence: bilateral filter->normalization->equalization
@@ -100,16 +105,19 @@ ax2[1,2].set_title("local gradient")
 ax2[1,3].imshow(watershed2)
 ax2[1,3].set_title("watershed")
 
-brain_vec1 = normal1.ravel()
+brain_vec1 = brain_data.ravel()
 brain_vec1 = brain_vec1[brain_vec1 > 0]
-n , bins, patches = ax3[0,0].hist(brain_vec1, bins=range(256))
+n , bins, patches = ax3[0,0].hist(brain_vec1, bins=range(brain_vec1.max()+1))
 
 # taking the values from the histogram and applying a floating point average to them to smooth curve for analysis
 floating_point= 20
 x_data = bins[1:]
 y_data = n
-new_curve = smooth_curve(20, y_data,x_data)
 
-plt.plot(new_curve[0],new_curve[1])
+new_curve = smooth(n, window_len=30, window='bartlett')
+print(new_curve.shape)
+indexes = signal.find_peaks_cwt(new_curve, np.arange(15,20))
+print(indexes)
+plt.plot(new_curve)
 plt.tight_layout()
 plt.show()
