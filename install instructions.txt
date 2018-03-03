@@ -1,0 +1,17 @@
+Install python 3.6.4 if not already done
+install visual c++ Build tools (i did the 2015 version)
+
+//make a virtual environment
+python -m venv venv
+
+//connect to virtual enviroment from main folder
+venv\Scripts\activate.bat
+
+// from location of requirements.txt
+pip install -r requirements.txt
+// if a dependency is not in requirements.txt run the associated
+//pip install numpy six
+//pip install SimpleITK
+//pip install scikit-image
+//pip install peakutils
+
