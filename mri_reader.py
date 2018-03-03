@@ -9,7 +9,7 @@ print(brain_data.get_dimensions())
 slice_top = brain_data.get_slice(BrainData.TOP_PROF, 120)
 slice_front = brain_data.get_slice(BrainData.SIDE_PROF, 100)
 
-brain_image = slice_front;
+brain_image = slice_front
 ########################################################
 brain = isolate_brain(brain_image)
 normalized= normalize_255(brain['data'])
@@ -32,7 +32,7 @@ ax[1, 0].set_title("equalized")
 print(segmented.shape)
 print(segmented.ndim)
 
-labels = label(segmented);
+labels = label(segmented)
 
 regions = regionprops(labels, normalized)
 
