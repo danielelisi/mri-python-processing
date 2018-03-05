@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MRI Project</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}"/>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    
+    <body>
+        <div id="display">
+            <div id="toolbar">
+                <div class="tbar_content">File</div>
+                <div class="tbar_content">Edit</div>
+                <div class="tbar_content">View</div>
+            </div>
+            
+            <div id="img_display">
+                <div id="img"></div>
+                <button id="detect" class="button">Find Tumor</button>
+            </div>
+
+            <div id="options">
+                <form action="/change" id="form">
+                    <div id="holder">
+                        <label class="container">Top
+                            <input type="radio" name="angle" checked="checked" value="top" class="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="container">Side
+                            <input type="radio" name="angle" value="side" class="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="container">Front
+                            <input type="radio" name="angle" value="front" class="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <label id="sn">Slice Number: 
+                        <input type="number" name="slice_num" placeholder="Slice Number" class="input"><br>
+                    </label>
+                    <input type="submit" value="Get Slice" id="button" class="button">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

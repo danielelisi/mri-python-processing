@@ -1,0 +1,184 @@
+body {
+    position: relative;
+    margin: 0;
+    justify-content: center;
+    align-content: center;
+}
+
+#display {
+    width: 100vw;
+    height: 100vh;
+    background-color: #555;
+}
+
+#toolbar {
+    background-color: #444;
+    height: 30px;
+    width: 100vw;
+    display: grid;
+    grid-template-areas: 
+        'content content content content content content content content content content content content content content content content content content content content content content content content content'
+}
+
+.tbar_content {
+    height: 30px;
+    color: #AAA;
+    text-align: center;
+    line-height: 30px;
+    font-family: sans-serif;
+    width: 100%;
+}
+
+.tbar_content:hover {
+    background-color: #333333;
+    color: #CCC;
+}
+
+#img_display {
+    position: absolute;
+    width: 80%;
+    height: 97%;
+    background-color: #555;
+    left: 20%;
+    text-align: center;
+}
+
+#img {
+    height: 70%;
+    width: 70%;
+    display: inline-block;
+    margin-top: 40px;
+    background-image: url("../../brain_img.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#detect {
+    background-color: #333;
+    padding: 1% 10%;
+    font-size: 120%;
+}
+
+#detect:hover {
+    background-color: #222;
+}
+
+#options {
+    position: relative;
+    width: 20%;
+    height: 97%;
+    background-color: #666666;
+}
+
+#form {
+    position: relative;
+    top: 30%;
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    font-family: sans-serif;
+    color: #222;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #aaa;
+    border-radius: 50%;
+}
+
+.container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+.container input:checked ~ .checkmark {
+    background-color: #333333;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.container .checkmark:after {
+ 	top: 9px;
+	left: 9px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+    border-width: 0;
+	background: #AAA;
+}
+
+#sn {
+    font-size: 22px;
+    font-family: sans-serif;
+    display: block;
+    text-align: center;
+    margin-top: 58px;
+    line-height: 22px;
+    color: #222;
+}
+
+.input {
+    border-width: 0;
+    height: 22px;
+    color: #444;
+    font-family: sans-serif;
+    font-style: bold;
+    background-color: #aaa;
+    text-align: center;
+    width: 25%;
+}
+
+.input:hover {
+    background-color: #CCC;
+}
+
+.button {
+    position: relative;
+    display: block;
+    font-family: sans-serif;
+    color: #AAA;
+    background-color: #444;
+    border-width: 0;
+    padding: 2% 20%;
+    vertical-align: middle;
+    align-self: center;
+    margin-top: 62px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button:hover {
+    background-color: #333333;
+    color: #CCC;
+}

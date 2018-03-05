@@ -1,11 +1,11 @@
 import SimpleITK
 from skimage.measure import label, regionprops
-
+from skimage.restoration import denoise_nl_means, estimate_sigma, denoise_tv_chambolle
 from scipy import ndimage as ndi
 from skimage.filters import rank, gaussian
 from skimage.morphology import watershed, disk
-
 import numpy as np
+
 
 class BrainData:
     '''
@@ -20,14 +20,13 @@ class BrainData:
     def __init__(self, mha_location):
 
         # try catch this shit
-        input_image = SimpleITK.ReadImage( mha_location )
+        input_image = SimpleITK.ReadImage(mha_location)
 
         # do some checking here to make sure it is a 3d image
 
         # get the image data from mha
         self.data = SimpleITK.GetArrayFromImage(input_image)
         self.dimensions = self.data.shape
-
 
     def get_slice(self, profile, index):
 
@@ -37,7 +36,6 @@ class BrainData:
         '''
 
         if index >= self.dimensions[profile]:
-
             return None
 
         if profile == self.TOP_PROF:
@@ -84,7 +82,7 @@ def isolate_brain(img_array):
 
     if len(regions) > 1:
         for index, region in enumerate(regions):
-            if(region.area > max_area):
+            if region.area > max_area:
                 selected_region = index
                 max_area = region.area
 
@@ -97,6 +95,7 @@ def isolate_brain(img_array):
 # TODO need to change values for denoising to get optimum 
 # values (we need to decrease the number of regions detected to make it faster)
 
+
 def segment(brain_img):
 
     '''
@@ -108,12 +107,13 @@ def segment(brain_img):
     markers = ndi.label(markers)[0]
 
     # get the local gradient
-    gradient = rank.gradient(denoised, disk(1))
+    gradient = rank.gradient(brain_img, disk(1))
 
     # process the watershed
     labels = watershed(gradient, markers)
 
     return labels
+
 
 def check_brain(brain_img):
     '''
@@ -125,11 +125,10 @@ def check_brain(brain_img):
     histogram = np.histogram(brain_img,range=range(256))
     return None
 
-def get_tumor_region(label, image):
 
+def get_tumor_region(label, image):
     return None
 
-from skimage.restoration import denoise_nl_means, estimate_sigma, denoise_tv_chambolle
 
 def denoise(image):
 
@@ -138,7 +137,7 @@ def denoise(image):
 
     # estimate the noise standard deviation from the noisy image
     sigma_est = np.mean(estimate_sigma(image, multichannel=False))
-    print( "Estimated noise standard deviation ={}".format(sigma_est))
+    print("Estimated noise standard deviation ={}".format(sigma_est))
 
     patch_kw = dict(patch_size=5, patch_distance=6, multichannel=False)
 
@@ -150,6 +149,7 @@ def denoise(image):
     print("dimension")
     print(denoise.ndim)
     return denoise
+
 
 def normalize_255(image):
 
@@ -165,11 +165,10 @@ def normalize_255(image):
     normalized = normalized.astype("uint8")
 
     #print(normalized)
-    
     return normalized
 
-def equalize(image):
 
+def equalize(image):
 
     h = np.histogram(image, bins=256)[0]
     H = np.cumsum(h) / float(np.sum(h))

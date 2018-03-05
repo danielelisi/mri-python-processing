@@ -163,7 +163,7 @@ def close_mask(image_in_binary, origin_image):
 # This is the function to call to run the file
 def run(file):
 
-    image = None
+    image = 'brain.mha'
 
     try:
         image = misc.imread(file, mode="L")
