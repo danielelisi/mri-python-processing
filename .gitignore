@@ -101,5 +101,3 @@ ENV/
 .mypy_cache/
 data/
 
-# project related files
-/Flask/static/uploads/**
