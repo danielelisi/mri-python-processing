@@ -1,12 +1,18 @@
+import os, sys
+
+here = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(here, "..", "pymodules"))
+
+
 from flask import Flask, render_template, request
 from PIL import Image
 from brain_img_processor import BrainData
 from werkzeug.utils import secure_filename
-import os
 
 app = Flask(__name__, static_url_path='/Flask/static')
-UPLOAD_FOLDER = '..\\Flask\\static\\uploads'
-IMG_FOLDER = '..\\Flask\\static\\img'
+
+UPLOAD_FOLDER = os.path.join('Flask','static','uploads')
+IMG_FOLDER = os.path.join('Flask','static','img')
 ALLOWED_EXTENSIONS = set(['mha', 'nii', 'png', 'jpg', 'jpeg'])
 
 
