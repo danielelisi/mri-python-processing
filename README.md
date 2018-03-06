@@ -6,7 +6,7 @@ Digital Images Processing and Segmentation for Brain Tumor MRI
 
 ### Prerequisites
 * Python 3.6
-* Gitbash (Windows) or WSL
+* For Windows: Gitbash or WSL
    * run the commands using these shells
 
 
