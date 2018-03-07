@@ -104,3 +104,6 @@ data
 # visual studio code
 .vscode/
 
+
+# project specific ignores
+server/static/uploads/**
