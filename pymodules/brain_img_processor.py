@@ -20,7 +20,10 @@ class BrainData:
     def __init__(self, mha_location):
 
         # try catch this shit
-        input_image = SimpleITK.ReadImage(mha_location)
+        try:
+            input_image = SimpleITK.ReadImage(mha_location)
+        except Exception:
+            raise Exception(f'Error opening file "{mha_location}"')
 
         # do some checking here to make sure it is a 3d image
 
@@ -47,6 +50,7 @@ class BrainData:
 
     def get_dimensions(self):
         return self.dimensions
+        
     
 ############################################
 # HELPER FUNCTIONS
@@ -151,14 +155,16 @@ def denoise(image):
     return denoise
 
 
-def normalize_255(image):
+def normalize_255(image, clip_zero=False):
 
-    non_zero = image[image>0]
+    input_data = image
+    if clip_zero:
+        input_data = input_data[image>0]
 
-    min = np.amin(non_zero)
-    max = np.amax(non_zero)
+    min = np.amin(input_data)
+    max = np.amax(input_data)
     
-    normalized = (image-min) / (max-min) * 255
+    normalized = (input_data-min) / (max-min) * 255
 
     normalized = np.clip(normalized, a_min=0, a_max=255)
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Canvas</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+           
+
+        <canvas id="canvas1"></canvas>
+        <input type="range" class="slider" id="myRange">
+        <script>
+           
+            data = {{ brain.data }}
+            dim = {{ brain.dim }}
+
+            console.log(dim)
+            console.log(data)
+            var canvas = document.getElementById("canvas1");
+            var slider = document.getElementById('myRange');
+            
+            console.log(canvas)
+            var ctx = canvas.getContext('2d')
+
+            slice = data[70]
+
+            console.log(slice)
+
+            
+
+            var makeCanvas = function(array){
+                canvas.width = array.length;
+                canvas.height = array[0].length;
+            }
+
+            var drawImg = function(array){
+                for (i=0; i<array.length;i++){
+                    for(j=0; j<array[i].length;j++){
+                        var color = array[i][j]
+                        ctx.fillStyle = "rgb("+color+","+color+","+color+")";
+                        ctx.fillRect(j, i, 1, 1);
+                    }
+                }
+            }
+
+            var makeSlider = function(max) {
+                slider = document.getElementById('myRange');
+
+                slider.max = max
+            }
+
+            slider.addEventListener('change', event=>{
+                console.log(slider.value)
+                drawImg(data[slider.value])
+            })
+
+            makeSlider(dim[0])
+            makeCanvas(slice)
+            drawImg(slice)
+        </script>
+    </body>
+ </html>

@@ -9,6 +9,7 @@
     </head>
     
     <body>
+        {{ myvar.var }}
         <div id="display">
             <form id='upload' enctype="multipart/form-data" action="http://localhost:5000/upload_file" method="POST">
                 <div class="file-upload">
@@ -21,8 +22,10 @@
                 <input id="submit" type="submit" value="Load">
             </form>
         </div>
-        
+
+           
         <script>
+
             $('#chooseFile').bind('change', function () {
                 var filename = $("#chooseFile").val();
                 if (/^\s*$/.test(filename)) {
