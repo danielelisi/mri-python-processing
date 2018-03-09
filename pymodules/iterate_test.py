@@ -6,7 +6,7 @@ from scipy import ndimage as ndi
 from iterate_brain import get_slices
 
 
-brain = BrainData('data/brain.mha')
+brain = BrainData('../data/brain.mha')
 
 images = get_slices(brain)
 

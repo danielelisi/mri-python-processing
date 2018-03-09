@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Canvas</title>
+    </head>
+    <body>
+        <canvas id="canvas1"></canvas>
+        <script>
+            var canvas = document.getElementById("canvas1")
+            console.log(canvas)
+            var ctx = canvas.getContext('2d')
+            var makeCanvas = function(array){
+                canvas.width = array.length;
+                canvas.height = array[0].length;
+            }
+
+            var drawImg = function(array){
+                for (i=0; i<array.length;i++){
+                    for(j=0; j<array[i].length;j++){
+                        var color = array[i][j]
+                        ctx.fillStyle = "rgb("+color+","+color+","+color+")";
+                        ctx.fillRect(j, i, 1, 1);
+                    }
+                }
+            }
+        </script>
+    </body>
+ </html>

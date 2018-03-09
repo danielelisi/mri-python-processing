@@ -9,7 +9,7 @@ from scipy import ndimage as ndi
 
 def get_slices(brain_data):
     brain = brain_data
-    hide_image_num = 100
+    hide_image_num = -1000
     #retrieve all top down images from mri scan
     top_images = []
 
