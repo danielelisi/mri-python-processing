@@ -11,41 +11,15 @@ body {
     background-color: #555;
 }
 
-#toolbar {
-    background-color: #444;
-    height: 30px;
-    width: 100vw;
-    display: grid;
-    grid-template-areas: 
-        'content content content content content content content content content content content content content content content content content content content content content content content content content'
-}
-
-.tbar_content {
-    height: 30px;
-    color: #AAA;
-    text-align: center;
-    line-height: 30px;
-    font-family: sans-serif;
-    width: 100%;
-}
-
-.tbar_content:hover {
-    background-color: #333333;
-    color: #CCC;
-}
-
 #img_display {
-    position: absolute;
-    width: 80%;
-    height: 97%;
+    width: 100%;
     background-color: #555;
-    left: 20%;
     text-align: center;
 }
 
 #img {
-    height: 70%;
-    width: 70%;
+    height: 50vh;
+    width: 50vh;
     display: inline-block;
     margin-top: 40px;
     background-image: url("../../brain_img.jpg");
@@ -54,44 +28,81 @@ body {
     background-position: center;
 }
 
-#detect {
-    background-color: #333;
-    padding: 1% 10%;
-    font-size: 120%;
+#canvas1 {
+    height: 100%;
+    width: 100%;
 }
 
-#detect:hover {
-    background-color: #222;
+#a {
+    padding-top: 50px;
 }
 
-#options {
-    position: relative;
-    width: 20%;
-    height: 97%;
-    background-color: #666666;
+.slider {
+    -webkit-appearance: none !important;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50% !important;
+    height: 15px !important;
+    border-radius: 5px !important;
+    background: #aaa !important;
+    outline: none !important;
+    -webkit-transition: .2s !important;
+    transition: opacity .2s !important;
 }
 
-#form {
-    position: relative;
-    top: 30%;
+.slider:hover {
+    background: #ccc !important;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 25px !important;
+    height: 25px !important;
+    border-radius: 50% !important;
+    background: #222 !important;
+    cursor: pointer !important;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px !important;
+    height: 25px !important;
+    border-radius: 50% !important;
+    background: #222 !important;
+    cursor: pointer !important;
+}
+
+#sn {
+    font-size: 22px;
+    font-family: sans-serif;
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    line-height: 22px;
+    color: #222;
+}
+
+.dropdown-menu {
+    background: #EEE !important;
 }
 
 .container {
-    margin-left: auto;
-    margin-right: auto;
-    width: 40%;
-    display: block;
     position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
+    padding-left: 20px !important;
+    width: 200px !important;
     cursor: pointer;
-    font-size: 22px;
-    font-family: sans-serif;
+    font-family: sans-serif !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
     color: #222;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+.container:hover {
+    color: #AAA;
 }
 
 .container input {
@@ -104,8 +115,8 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    height: 25px;
-    width: 25px;
+    height: 15px;
+    width: 15px;
     background-color: #aaa;
     border-radius: 50%;
 }
@@ -128,27 +139,7 @@ body {
     display: block;
 }
 
-.container .checkmark:after {
- 	top: 9px;
-	left: 9px;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-    border-width: 0;
-	background: #AAA;
-}
-
-#sn {
-    font-size: 22px;
-    font-family: sans-serif;
-    display: block;
-    text-align: center;
-    margin-top: 58px;
-    line-height: 22px;
-    color: #222;
-}
-
-.input {
+.input[type=number] {
     border-width: 0;
     height: 22px;
     color: #444;
@@ -157,28 +148,11 @@ body {
     background-color: #aaa;
     text-align: center;
     width: 25%;
+    text-align: center;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 
 .input:hover {
     background-color: #CCC;
-}
-
-.button {
-    position: relative;
-    display: block;
-    font-family: sans-serif;
-    color: #AAA;
-    background-color: #444;
-    border-width: 0;
-    padding: 2% 20%;
-    vertical-align: middle;
-    align-self: center;
-    margin-top: 62px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.button:hover {
-    background-color: #333333;
-    color: #CCC;
 }

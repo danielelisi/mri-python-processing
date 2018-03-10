@@ -2,46 +2,155 @@
 <html>
     <head>
         <title>MRI Project</title>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}"/>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}"/>
     </head>
     
     <body>
         <div id="display">
-            <div id="toolbar">
-                <div class="tbar_content">File</div>
-                <div class="tbar_content">Edit</div>
-                <div class="tbar_content">View</div>
-            </div>
-            
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <div id="open" class="container" onclick="open();">Open</div>
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">Filters <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <form>
+                                    <label class="container">Normalized
+                                        <input type="radio" name="angle" value="front" class="radio" checked="checked" onclick="normalize();">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container">Median Filter
+                                        <input type="radio" name="angle" value="front" class="radio" onclick="median();">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container">Bilateral Filtered
+                                        <input type="radio" name="angle" value="front" class="radio" onclick="bilateral_filter();">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container">Watershed
+                                        <input type="radio" name="angle" value="front" class="radio" onclick="watershed();">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </form>
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">Slice Area <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <label class="container">Top
+                                    <input type="radio" name="angle" checked="checked" value="top" id="top" onclick="changeTop();" class="radio">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container">Side
+                                    <input type="radio" name="angle" value="side" id="side" onclick="changeSide();" class="radio">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container">Front
+                                    <input type="radio" name="angle" value="front" id="front" onclick="changeFront();" class="radio">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
             <div id="img_display">
-                <div id="img"></div>
-                <button id="detect" class="button">Find Tumor</button>
-            </div>
-
-            <div id="options">
-                <form action="/change" id="form">
-                    <div id="holder">
-                        <label class="container">Top
-                            <input type="radio" name="angle" checked="checked" value="top" class="radio">
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="container">Side
-                            <input type="radio" name="angle" value="side" class="radio">
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="container">Front
-                            <input type="radio" name="angle" value="front" class="radio">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
+                <div id="img">
+                    <canvas id="canvas1"></canvas>
+                </div>
+                <div id="a">
+                    <input type="range" class="slider" id="myRange">
                     <label id="sn">Slice Number: 
-                        <input type="number" name="slice_num" placeholder="Slice Number" class="input"><br>
+                        <input type="number" name="slice_num" placeholder="Slice Number" class="input" id="num" min="0"><br>
                     </label>
-                    <input type="submit" value="Get Slice" id="button" class="button">
-                </form>
+                </div>
             </div>
         </div>
+        
+        <script>
+            var data = {{ brain.data }};
+            var dim = {{ brain.dim }};
+            
+            var canvas = document.getElementById("canvas1");
+            var slider = document.getElementById('myRange');
+            var numInput = document.getElementById("num");
+
+            var ctx = canvas.getContext('2d');
+            var slice = data[70];
+
+            var makeCanvas = function(array) {
+                canvas.width = array.length;
+                canvas.height = array[0].length;
+            }
+
+            var drawImg = function(array) {
+                for (i=0; i < array.length; i++) {
+                    for(j=0; j < array[i].length; j++) {
+                        var color = array[i][j];
+                        ctx.fillStyle = "rgb("+color+","+color+","+color+")";
+                        ctx.fillRect(j, i, 1, 1);
+                    }
+                }
+            }
+
+            var makeSlider = function(max) {
+                slider = document.getElementById('myRange');
+                slider.max = max;
+                numInput.value = slider.value;
+            }
+
+            var changeTop = function() {
+                alert("Hello");
+            }
+
+            var changeFront = function() {
+                alert("Hello");
+            }
+
+            var changeSide = function() {
+                alert("Hello");
+            }
+            
+            var bilateral_filter = function() {
+                alert("Hello");
+            }
+            
+            var normalize = function() {
+                alert("Hello");
+            }
+            
+            var watershed = function() {
+                alert("Hello");
+            }
+            
+            var median = function() {
+                alert("Hello");
+            }
+            
+            var open = function() {
+                window.location.href = "/landing";
+            }
+
+            slider.oninput = function() {
+                drawImg(data[this.value]);
+                numInput.value = this.value;
+            }
+            
+            numInput.oninput = function() {
+                drawImg(data[this.value]);
+                slider.value = this.value;
+            }
+
+            makeSlider(dim[0]);
+            makeCanvas(slice);
+            drawImg(slice);
+        </script>
     </body>
 </html>

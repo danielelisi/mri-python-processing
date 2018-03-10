@@ -24,8 +24,6 @@ class BrainProcessor:
         return True
 
     def get_data(self):
-
-        # send in brain data that is normalized
         normalized = normalize_255(self.brain_data.data)
 
         return {

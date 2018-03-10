@@ -9,23 +9,20 @@
     </head>
     
     <body>
-        {{ myvar.var }}
         <div id="display">
             <form id='upload' enctype="multipart/form-data" action="http://localhost:5000/upload_file" method="POST">
                 <div class="file-upload">
                     <div class="file-select">
                         <div class="file-select-button" id="fileName">Choose File</div>
                         <div class="file-select-name" id="noFile">No file chosen...</div> 
-                        <input type="file" name="chooseFile" id="chooseFile">
+                        <input type="file" accept=".mha" name="chooseFile" id="chooseFile">
                     </div>
                 </div>
                 <input id="submit" type="submit" value="Load">
             </form>
         </div>
-
            
         <script>
-
             $('#chooseFile').bind('change', function () {
                 var filename = $("#chooseFile").val();
                 if (/^\s*$/.test(filename)) {
