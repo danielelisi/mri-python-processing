@@ -86,6 +86,14 @@ body {
     background: #EEE !important;
 }
 
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+#fdropdown {
+    padding-left: 20px;
+}
+
 .container {
     position: relative;
     padding-left: 20px !important;
@@ -103,6 +111,7 @@ body {
 
 .container:hover {
     color: #AAA;
+    text-decoration: none;
 }
 
 .container input {

@@ -2,12 +2,13 @@
 <html>
     <head>
         <title>MRI Project</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="../static/css/index.css"/>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}"/>
     </head>
     
     <body>
@@ -16,8 +17,9 @@
                 <div class="container-fluid">
                     <ul class="nav navbar-nav">
                         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <div id="open" class="container" onclick="open();">Open</div>
+                            <ul class="dropdown-menu" id="fdropdown">
+                                <a id="open" class="container" href="/">Open</a>
+                                <a class="container">AI</a>
                             </ul>
                         </li>
                         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">Filters <span class="caret"></span></a>
@@ -132,10 +134,6 @@
             
             var median = function() {
                 alert("Hello");
-            }
-            
-            var open = function() {
-                window.location.href = "/landing";
             }
 
             slider.oninput = function() {
