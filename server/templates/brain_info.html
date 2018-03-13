@@ -33,52 +33,131 @@
             
         </div>
 
+        <fieldset>
+            <legend>Pre processing</legend>
+            <input type='button' value='Median Filter'/>
+            <input type='button' value='Histogram EQ' />
+            <input type='button' value='Bilateral Filter' />
+            <input type='button' value='Strip Skull' />
+        </fieldset>
+
+        <fieldset>
+            <legend>Segmentation</legend>
+            <input type='button' value='Locate Marker'/>
+            <input type='button' value='Show Local Gradient' />
+            <input type='button' value='Apply Watershed' />
+        </fieldset>
+
+        <fieldset>
+            <legend>Tumor Detection</legend>
+            <input type='button' value='Detect Tumor'/>
+            
+        </fieldset>
         
         <script>
            
-        
+            // TODO i'd like to separate this to brain.js
             // create a model
             var brain_model = {
-                data: null,
+                data: [],
                 loadData: function(data) {
                     this.data = data
+
+                    this.views.top.slider.max = data.length -1;
+                    this.views.front.slider.max = data[0].length - 1;
+                    this.views.side.slider.max = data[0][0].length - 1;
+
+                    // default value would be the middle
+                    this.views.top.slider.value = Math.floor((data.length - 1) / 2);
+                    this.views.front.slider.value = Math.floor(data[0].length / 2);
+                    this.views.side.slider.value = Math.floor(data[0][0].length / 2);
+
+                    this.views.top.index.value = this.views.top.slider.value;
+                    this.views.front.index.value = this.views.front.slider.value;
+                    this.views.side.index.value = this.views.side.slider.value;
+
+                    this.views.redraw();
+
                 },
                 getSlice: function(type="top", index) {
                     
+                    brain = this.data
                     if(type === 'top') {
+                        if(index >= brain.length) {
+                            index = brain.length - 1;
+                        }
 
+                        if(index < 0) {
+                            index = 0
+                        }
+                        
+                        return this.data[index]
                     } 
                     else if(type === 'side')
                     {
+                        result = [];
+                        
+                        // check out of bounds
+                        if (index >= brain[0][0].length) {
+                            index = brain[0][0].length - 1
+                        }
 
+                        if (index < 0) {
+                            index = 0;
+                        }
 
+                        for(var x = 0 ; x < brain.length; x++) {
+                            temp_array = []
+                            for(var y= 0; y < brain[x].length; y++)
+                            {
+                                temp_array.push(brain[x][y][index])
+                            }
+                            result.push(temp_array)
+                        }
+                        return result;
                     } 
                     else if(type === 'front') {
                         
+                        result = [];
+
+                        for(var x = 0; x < brain.length ; x++) {
+                            result.push(brain[x][index])
+                        }
+                        return result;
                     }
+                    return []
                 },
                 views: {
                     redraw: function() {
-                        this.top.canvas.draw(brain_model.data, 'grayscale')
-                        this.side.canvas.draw(brain_model.data, 'grayscale')
-                        this.front.canvas.draw(brain_model.data, 'grayscale')
+                        this.top.draw()
+                        this.side.draw()
+                        this.front.draw()
                     },
                     top: {
                         canvas: document.getElementById('top_view'),
                         slider: document.getElementById('top_view_slider'),
-                        index: document.getElementById('top_view_index')
+                        index: document.getElementById('top_view_index'),
+                        draw: function() {
+                            this.canvas.draw(brain_model.getSlice('top', this.slider.value), 'grayscale')
+                        }
                     },
 
                     side: {
                         canvas: document.getElementById('side_view'),
                         slider: document.getElementById('side_view_slider'),
-                        index: document.getElementById('side_view_index')
+                        index: document.getElementById('side_view_index'),
+                        draw: function() {
+                            this.canvas.draw(brain_model.getSlice('side', this.slider.value), 'grayscale', true, true);
+                        }
                     },
                     
                     front: {
                         canvas: document.getElementById('front_view'),
                         slider: document.getElementById('front_view_slider'),
-                        index: document.getElementById('front_view_index')
+                        index: document.getElementById('front_view_index'),
+                        draw: function() {
+                            this.canvas.draw(brain_model.getSlice('front', this.slider.value), 'grayscale', true)
+                        }
                     }
                 },
                 init: function() {
@@ -94,22 +173,36 @@
                 },
                 attach_properties: function(view){
 
-                    view.canvas.draw = draw;                    
+                    view.canvas.draw = draw;  
+                    view.slider.addEventListener('change', function(){
+                        view.index.value = this.value;
+                        view.draw()
+                    })                  
                 }
                 
             }
             
             // this applies to canvas
             // type could be RGB | grayscale
-            
-            function draw(img_array, type='RGB', context='2d') {
-               var ctx = this.getContext(context)
+            // separate this function, i could reuse this for the output view
+            function draw(img_array, type='RGB', flipx=false, flipy=false) {
+               
+                var ctx = this.getContext('2d');
+                
+                var startx = (flipx)? img_array.length - 1 : 0;
+                var endx = (flipx)? 0 : img_array.length - 1;
+                var stepx = (flipx)? -1 : 1;
+
+                var starty = (flipy)? img_array[0].length - 1 : 0;
+                var endy = (flipy)? 0 : img_array[0].length -1;
+                var stepy = (flipy)? -1 : 1;
+
                 if(type === 'grayscale') {
-                    for (i=0; i<img_array.length;i++){
-                        for(j=0; j<img_array[i].length;j++){
+                    for (i=startx, x=0; i != endx; i+=stepx, x++){
+                        for(j=starty, y=0; j != endy;j+=stepy, y++){
                             var color = img_array[i][j]
                             ctx.fillStyle = "rgb("+color+","+color+","+color+")";
-                            ctx.fillRect(j, i, 1, 1);
+                            ctx.fillRect(y, x, 1, 1);
                         }
                     }
                 } 
@@ -117,42 +210,18 @@
 
                 }
             }
-           
-            var array = []
 
-            for(var i = 0 ; i < 100 ; i++) {
-                temp_array = []
-                for (var j = 0; j < 100 ; j++) {
-                    temp_array.push(0)      
-                }
-                array.push(temp_array)
+            function main(){
+
+                data = {{brain.data}};
+                dim = {{brain.dim}};
+                
+                brain_model.init();
+                brain_model.loadData(data);
             }
 
-            console.log(array)
-            console.log(array[3][3])
-
-            brain_model.init();
-            brain_model.loadData(array)
-
-            array = []
-
-            for(var i = 0 ; i < 100 ; i++) {
-                temp_array = []
-                for (var j = 0; j < 100 ; j++) {
-                    temp_array.push(128)      
-                }
-                array.push(temp_array)
-            }
-            
-            brain_model.loadData(array)
-
-            brain_model.views.redraw()
-            // data = {{ brain.data }}
-            // dim = {{ brain.dim }}
-
-            // console.log(dim)
-            // console.log(data)
            
+            main();
         
         </script>
     </body>
