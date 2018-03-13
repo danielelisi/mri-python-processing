@@ -2,62 +2,158 @@
 
 <html>
     <head>
-        <title>Canvas</title>
+        <title>MHA Brain Information</title>
         <meta charset="utf-8">
     </head>
     <body>
            
+        <!-- div for axial profile -->
+        <div>
+            <h3>AXIAL</h3>
+            <canvas id="top_view"></canvas>
+            <input type="range" class="slider" id="top_view_slider">
+            <label for='top_view_index'>index</label><input type="text" id='top_view_index'/>
+        </div>
 
-        <canvas id="canvas1"></canvas>
-        <input type="range" class="slider" id="myRange">
+        <!-- div for sagittal profile -->
+        <div>
+            <h3>SAGITTAL</h3>
+            <canvas id="side_view"></canvas>
+            <input type="range" class="slider" id="side_view_slider">
+            <label for='side_view_index'>index</label><input type="text" id='side_view_index'/>
+            
+        </div>
+
+        <!-- div for coronoal profile -->
+        <div>
+            <h3>CORONAL</h3>
+            <canvas id="front_view"></canvas>
+            <input type="range" class="slider" id="front_view_slider">
+            <label for='front_view_index'>index</label><input type="text" id='front_view_index'/>
+            
+        </div>
+
+        
         <script>
            
-            data = {{ brain.data }}
-            dim = {{ brain.dim }}
+        
+            // create a model
+            var brain_model = {
+                data: null,
+                loadData: function(data) {
+                    this.data = data
+                },
+                getSlice: function(type="top", index) {
+                    
+                    if(type === 'top') {
 
-            console.log(dim)
-            console.log(data)
-            var canvas = document.getElementById("canvas1");
-            var slider = document.getElementById('myRange');
-            
-            console.log(canvas)
-            var ctx = canvas.getContext('2d')
+                    } 
+                    else if(type === 'side')
+                    {
 
-            slice = data[70]
 
-            console.log(slice)
-
-            
-
-            var makeCanvas = function(array){
-                canvas.width = array.length;
-                canvas.height = array[0].length;
-            }
-
-            var drawImg = function(array){
-                for (i=0; i<array.length;i++){
-                    for(j=0; j<array[i].length;j++){
-                        var color = array[i][j]
-                        ctx.fillStyle = "rgb("+color+","+color+","+color+")";
-                        ctx.fillRect(j, i, 1, 1);
+                    } 
+                    else if(type === 'front') {
+                        
                     }
+                },
+                views: {
+                    redraw: function() {
+                        this.top.canvas.draw(brain_model.data, 'grayscale')
+                        this.side.canvas.draw(brain_model.data, 'grayscale')
+                        this.front.canvas.draw(brain_model.data, 'grayscale')
+                    },
+                    top: {
+                        canvas: document.getElementById('top_view'),
+                        slider: document.getElementById('top_view_slider'),
+                        index: document.getElementById('top_view_index')
+                    },
+
+                    side: {
+                        canvas: document.getElementById('side_view'),
+                        slider: document.getElementById('side_view_slider'),
+                        index: document.getElementById('side_view_index')
+                    },
+                    
+                    front: {
+                        canvas: document.getElementById('front_view'),
+                        slider: document.getElementById('front_view_slider'),
+                        index: document.getElementById('front_view_index')
+                    }
+                },
+                init: function() {
+                    var views = this.views
+                    for(var view in views) {
+                        if (views.hasOwnProperty(view)) {
+                            if(views[view].hasOwnProperty('canvas'))
+                            {
+                                this.attach_properties(views[view])
+                            }
+                        }
+                    }
+                },
+                attach_properties: function(view){
+
+                    view.canvas.draw = draw;                    
+                }
+                
+            }
+            
+            // this applies to canvas
+            // type could be RGB | grayscale
+            
+            function draw(img_array, type='RGB', context='2d') {
+               var ctx = this.getContext(context)
+                if(type === 'grayscale') {
+                    for (i=0; i<img_array.length;i++){
+                        for(j=0; j<img_array[i].length;j++){
+                            var color = img_array[i][j]
+                            ctx.fillStyle = "rgb("+color+","+color+","+color+")";
+                            ctx.fillRect(j, i, 1, 1);
+                        }
+                    }
+                } 
+                else if (type === 'RGB') {
+
                 }
             }
+           
+            var array = []
 
-            var makeSlider = function(max) {
-                slider = document.getElementById('myRange');
-
-                slider.max = max
+            for(var i = 0 ; i < 100 ; i++) {
+                temp_array = []
+                for (var j = 0; j < 100 ; j++) {
+                    temp_array.push(0)      
+                }
+                array.push(temp_array)
             }
 
-            slider.addEventListener('change', event=>{
-                console.log(slider.value)
-                drawImg(data[slider.value])
-            })
+            console.log(array)
+            console.log(array[3][3])
 
-            makeSlider(dim[0])
-            makeCanvas(slice)
-            drawImg(slice)
+            brain_model.init();
+            brain_model.loadData(array)
+
+            array = []
+
+            for(var i = 0 ; i < 100 ; i++) {
+                temp_array = []
+                for (var j = 0; j < 100 ; j++) {
+                    temp_array.push(128)      
+                }
+                array.push(temp_array)
+            }
+            
+            brain_model.loadData(array)
+
+            brain_model.views.redraw()
+            // data = {{ brain.data }}
+            // dim = {{ brain.dim }}
+
+            // console.log(dim)
+            // console.log(data)
+           
+        
         </script>
     </body>
  </html>
