@@ -1,11 +1,19 @@
 from brain_img_processor import BrainData, normalize_255
-
+import numpy as np
 
 class BrainProcessor:
 
     def __init__(self):
 
         self.brain_data = None
+        self.top_view_index = 0
+        self.front_view_index = 0
+        self.side_view_index = 0
+        
+        self.pre_process_output = None
+        self.marker = None
+        self.local_gradient = None
+        self.watershed = None
 
     def load_mri(self, file_path):
 
