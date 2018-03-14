@@ -85,5 +85,13 @@ def resetPreprocessImage():
 
     return jsonify(result)
 
+@app.route('/isolateBrain', methods=['POST'])
+def isolateBrain():
+    print('Isolating brain')
+    brain_processor.isolate_brain()
+    result = brain_processor.get_pre_process_output().tolist()
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,4 +1,4 @@
-from brain_img_processor import BrainData, normalize_255, equalize, median, bilateral
+from brain_img_processor import *
 import numpy as np
 
 class BrainProcessor:
@@ -88,4 +88,12 @@ class BrainProcessor:
 
         self.set_view_index(self.current_index)
 
+        return
+    
+    def isolate_brain(self):
+
+        self.pre_process_output = isolate_brain(self.pre_process_output)['data']
+        return
+
+    def apply_watershed(self):
         return

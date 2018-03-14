@@ -36,11 +36,16 @@
 
         <fieldset>
             <legend>Pre processing</legend>
-            <input type='button' value='Median Filter' id='median_filter'/>
-            <input type='button' value='Histogram EQ' id='histo_filter'/>
-            <input type='button' value='Bilateral Filter' id='bilateral_filter'/>
-            <input type='button' value='Strip Skull' />
-            <input type='button' value='Reset' id='reset_filters' />
+            <div>
+                <input type='button' value='Isolate Brain' id='isolate_brain'/>
+                <input type='button' value='Strip Skull' />
+                <input type='button' value='Reset' id='reset_filters' />
+            </div>
+            <div>
+                <input type='button' value='Bilateral Filter' id='bilateral_filter'/>
+                <input type='button' value='Histogram EQ' id='histo_filter'/>
+                <input type='button' value='Median Filter' id='median_filter'/>
+            </div>
             <div>
                 <h4>Filters Applied</h4>
                 <div id='filters_list'></div>
@@ -52,8 +57,6 @@
 
         <fieldset>
             <legend>Segmentation</legend>
-            <input type='button' value='Locate Marker'/>
-            <input type='button' value='Show Local Gradient' />
             <input type='button' value='Apply Watershed' />
         </fieldset>
 
@@ -224,6 +227,7 @@
                 histo_filter = document.getElementById('histo_filter');
                 bilateral_filter = document.getElementById('bilateral_filter');
                 reset_filters = document.getElementById('reset_filters')
+                isolate_brain = document.getElementById('isolate_brain');
 
                 filters_list = document.getElementById('filters_list');
 
@@ -270,6 +274,21 @@
                 histo_filter.addEventListener('click', requestFilter('equalize'));
                 bilateral_filter.addEventListener('click', requestFilter('bilateral'))
 
+                isolate_brain.addEventListener('click', function(event){
+                    postRequest('/isolateBrain')
+                        .then(response=>response.json())
+                        .then(data => {
+
+                            view = brain_model.currentView;
+
+
+                            flipx = (view === 'side' || view ==='front')? true: false;
+                            flipy = (view === 'side')? true : false;
+                            updatePreprocessCanvas(data,flipx,flipy);
+                        })
+                        .catch(err => console.log(err));
+                });
+
                 reset_filters.addEventListener('click', function(event){
 
                     postRequest('/resetPreprocessImage')
@@ -299,6 +318,16 @@
                 var endy = (flipy)? 0 : img_array[0].length -1;
                 var stepy = (flipy)? -1 : 1;
 
+                var imageWidth = img_array[0].length
+                var imageHeight = img_array.length
+                // change the size of the canvase depending on image array
+                // TODO, use scale, its better to have a static sized canvas 
+                // computation would be target / size of image array = scalar
+                // scalar can be used to scale
+
+                this.height = imageHeight;
+                this.width = imageWidth;
+                
                 if(type === 'grayscale') {
                     for (i=startx, x=0; i != endx; i+=stepx, x++){
                         for(j=starty, y=0; j != endy;j+=stepy, y++){
