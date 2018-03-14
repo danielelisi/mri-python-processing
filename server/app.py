@@ -3,7 +3,7 @@ import os, sys
 here = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(here, "..", "pymodules"))
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from PIL import Image
 from BrainProcessor import BrainProcessor # change how this is imported
 from werkzeug.utils import secure_filename
@@ -51,6 +51,39 @@ def allowed_file(filename):
 def index():
     return render_template('landing.html')
 
+@app.route('/applyFilter', methods=['POST'])
+def applyFilter():
+    
+    filter = request.get_json()
+
+    brain_processor.apply_filter(filter)
+
+    result = brain_processor.get_pre_process_output().tolist()
+    return jsonify(result)
+
+@app.route('/setPreprocessImage', methods=['POST'])
+def setPreprocessImage():
+
+    data = request.get_json()
+
+    view = data['view']
+    index = int(data['index'])
+
+    brain_processor.set_view(view)
+    brain_processor.set_view_index(index)
+    brain_processor.init_pre_process_output()
+    
+    result = brain_processor.get_original_view().tolist()
+
+    return jsonify(result)
+
+@app.route('/resetPreprocessImage', methods=['POST'])
+def resetPreprocessImage():
+    print('resetting pre process image')
+    brain_processor.init_pre_process_output()
+    result = brain_processor.get_pre_process_output().tolist()
+
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,6 +1,6 @@
 import SimpleITK
 from skimage.measure import label, regionprops
-from skimage.restoration import denoise_nl_means, estimate_sigma, denoise_tv_chambolle
+from skimage.restoration import denoise_bilateral
 from scipy import ndimage as ndi
 from skimage.filters import rank, gaussian
 from skimage.morphology import watershed, disk
@@ -56,50 +56,6 @@ class BrainData:
 # HELPER FUNCTIONS
 ############################################
 
-
-def isolate_brain(img_array):
-
-    '''
-    Lazy way of isolating the brain from the 2d mri image
-    '''
-
-    result = {'data': None, 'origin': (0, 0)}
-
-    # binarize the image so we can properly separate the brain region.
-    # hardcode the threshold for now. this is just 
-    # a fast isolation method
-    bin_data = img_array > 10
-
-    # start labelling regions
-    label_image = label(bin_data)
-
-    # get the regions
-    regions = regionprops(label_image)
-
-    # if the number of regions is zero, there is no brain
-    if(len(regions)) == 0:
-        return result
-    # the number of regions should be 1
-    # if its greater than 1, find the largest one
-    selected_region = 0
-    max_area = 0
-
-    if len(regions) > 1:
-        for index, region in enumerate(regions):
-            if region.area > max_area:
-                selected_region = index
-                max_area = region.area
-
-    coords = regions[selected_region].bbox
-    result['origin'] = (coords[2]-coords[0], coords[3] - coords[1])
-    result['data'] = img_array[coords[0] : coords[2], coords[1] : coords[3]]
-
-    return result
-
-# TODO need to change values for denoising to get optimum 
-# values (we need to decrease the number of regions detected to make it faster)
-
-
 def segment(brain_img):
 
     '''
@@ -119,47 +75,14 @@ def segment(brain_img):
     return labels
 
 
-def check_brain(brain_img):
-    '''
-    Use gray value histogram of image to check whether tumor exists
-
-    Returns True if tumor exists
-    else returns false
-    '''
-    histogram = np.histogram(brain_img,range=range(256))
-    return None
-
-
 def get_tumor_region(label, image):
     return None
 
 
-def denoise(image):
-
-    '''implement a specific denoinising algorithm'''
-    sigma = 0.110
-
-    # estimate the noise standard deviation from the noisy image
-    sigma_est = np.mean(estimate_sigma(image, multichannel=False))
-    print("Estimated noise standard deviation ={}".format(sigma_est))
-
-    patch_kw = dict(patch_size=5, patch_distance=6, multichannel=False)
-
-    # slow algorith, sigma provided
-
-    denoise = denoise_nl_means(image, h=0.8 * sigma_est, fast_mode=False, **patch_kw)
-    denoise = denoise.astype(dtype="uint16")
-
-    print("dimension")
-    print(denoise.ndim)
-    return denoise
-
-
-def normalize_255(image, clip_zero=False):
+def normalize_255(image):
 
     input_data = image
-    if clip_zero:
-        input_data = input_data[image>0]
+   
 
     min = np.amin(input_data)
     max = np.amax(input_data)
@@ -176,9 +99,21 @@ def normalize_255(image, clip_zero=False):
 
 def equalize(image):
 
+    # need to disregard 0 values
     h = np.histogram(image, bins=256)[0]
     H = np.cumsum(h) / float(np.sum(h))
-    print(h.shape)
-    print(H.shape)
+ 
     e = np.floor(H[image.flatten()] * 255.)
     return e.reshape(image.shape).astype('uint8')
+
+def median(data):
+
+    return rank.median(data, disk(1))
+
+def bilateral(data, win_size=5, multichannel=False):
+
+    return denoise_bilateral(data, win_size=win_size, multichannel=multichannel)
+
+
+
+    

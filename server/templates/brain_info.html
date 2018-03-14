@@ -13,6 +13,7 @@
             <canvas id="top_view"></canvas>
             <input type="range" class="slider" id="top_view_slider">
             <label for='top_view_index'>index</label><input type="text" id='top_view_index'/>
+            <input type='button' value='select' id='top_view_select'/>
         </div>
 
         <!-- div for sagittal profile -->
@@ -21,7 +22,7 @@
             <canvas id="side_view"></canvas>
             <input type="range" class="slider" id="side_view_slider">
             <label for='side_view_index'>index</label><input type="text" id='side_view_index'/>
-            
+            <input type='button' value='select' id='side_view_select'/>
         </div>
 
         <!-- div for coronoal profile -->
@@ -30,15 +31,23 @@
             <canvas id="front_view"></canvas>
             <input type="range" class="slider" id="front_view_slider">
             <label for='front_view_index'>index</label><input type="text" id='front_view_index'/>
-            
+            <input type='button' value='select' id='front_view_select'/>
         </div>
 
         <fieldset>
             <legend>Pre processing</legend>
-            <input type='button' value='Median Filter'/>
-            <input type='button' value='Histogram EQ' />
-            <input type='button' value='Bilateral Filter' />
+            <input type='button' value='Median Filter' id='median_filter'/>
+            <input type='button' value='Histogram EQ' id='histo_filter'/>
+            <input type='button' value='Bilateral Filter' id='bilateral_filter'/>
             <input type='button' value='Strip Skull' />
+            <input type='button' value='Reset' id='reset_filters' />
+            <div>
+                <h4>Filters Applied</h4>
+                <div id='filters_list'></div>
+            </div>
+            <div>
+                <canvas id='pre_process_out'></canvas>
+            </div>
         </fieldset>
 
         <fieldset>
@@ -56,10 +65,12 @@
         
         <script>
            
+            
             // TODO i'd like to separate this to brain.js
             // create a model
             var brain_model = {
                 data: [],
+                currentView: null,
                 loadData: function(data) {
                     this.data = data
 
@@ -137,6 +148,7 @@
                         canvas: document.getElementById('top_view'),
                         slider: document.getElementById('top_view_slider'),
                         index: document.getElementById('top_view_index'),
+                        select: document.getElementById('top_view_select'),
                         draw: function() {
                             this.canvas.draw(brain_model.getSlice('top', this.slider.value), 'grayscale')
                         }
@@ -146,6 +158,7 @@
                         canvas: document.getElementById('side_view'),
                         slider: document.getElementById('side_view_slider'),
                         index: document.getElementById('side_view_index'),
+                        select: document.getElementById('side_view_select'),
                         draw: function() {
                             this.canvas.draw(brain_model.getSlice('side', this.slider.value), 'grayscale', true, true);
                         }
@@ -155,6 +168,7 @@
                         canvas: document.getElementById('front_view'),
                         slider: document.getElementById('front_view_slider'),
                         index: document.getElementById('front_view_index'),
+                        select: document.getElementById('front_view_select'),
                         draw: function() {
                             this.canvas.draw(brain_model.getSlice('front', this.slider.value), 'grayscale', true)
                         }
@@ -166,17 +180,29 @@
                         if (views.hasOwnProperty(view)) {
                             if(views[view].hasOwnProperty('canvas'))
                             {
-                                this.attach_properties(views[view])
+                                this.attach_properties(views[view], view)
                             }
                         }
                     }
                 },
-                attach_properties: function(view){
+                attach_properties: function(view, view_name){
 
                     view.canvas.draw = draw;  
-                    view.slider.addEventListener('change', function(){
+                    view.slider.addEventListener('change', function(event){
                         view.index.value = this.value;
                         view.draw()
+                    })
+                    view.select.addEventListener('click', function(event){
+
+                        flipx = (view_name === 'side' || view_name ==='front')? true: false;
+                        flipy = (view_name === 'side')? true : false;
+                        brain_model.currentView = view_name;
+                        postRequest('/setPreprocessImage', {view:view_name, index:view.slider.value})
+                            .then(response => response.json())
+                            .then(data => {
+                                pre_process_out.draw(data,'grayscale', flipx, flipy)
+                            })
+                            .catch(err => console.log(err))
                     })                  
                 }
                 
@@ -185,6 +211,82 @@
             // this applies to canvas
             // type could be RGB | grayscale
             // separate this function, i could reuse this for the output view
+            // lol, flipx shoud be flipy and vice versa but im too lazy to change
+            
+            function initPreprocessingFields() {
+
+                // init the output canvas
+                pre_process_out = document.getElementById('pre_process_out');
+                pre_process_out.draw = draw
+                
+                //add event listener to buttons
+                median_filter = document.getElementById('median_filter');
+                histo_filter = document.getElementById('histo_filter');
+                bilateral_filter = document.getElementById('bilateral_filter');
+                reset_filters = document.getElementById('reset_filters')
+
+                filters_list = document.getElementById('filters_list');
+
+                function updatePreprocessCanvas(data,flipx,flipy) {
+                    pre_process_out.draw(data,'grayscale',flipx,flipy)
+                }
+                
+                function addToFiltersList(filter) {
+                    
+                    list = filters_list.innerHTML;
+
+                    if(list !== '') {
+                        list += ' => '
+                    }
+
+                    list += filter
+
+                    filters_list.innerHTML = list
+                }
+
+                function resetFiltersList() {
+                    filters_list.innerHTML = '';
+                }
+
+                function requestFilter(filter) {
+                    return function(event) {
+                        postRequest('/applyFilter', filter)
+                            .then(response => response.json())
+                            .then(data => {
+
+                                img_array = data.img_array;
+                                view = brain_model.currentView;
+                                
+                                flipx = (view === 'side' || view ==='front')? true: false;
+                                flipy = (view === 'side')? true : false;
+                                updatePreprocessCanvas(data, flipx, flipy);
+                                addToFiltersList(this.value);
+                            })
+                            .catch(err => console.log(err));
+                        console.log(filter)
+                    }
+                }
+                median_filter.addEventListener('click', requestFilter('median'));
+                histo_filter.addEventListener('click', requestFilter('equalize'));
+                bilateral_filter.addEventListener('click', requestFilter('bilateral'))
+
+                reset_filters.addEventListener('click', function(event){
+
+                    postRequest('/resetPreprocessImage')
+                        .then(response => response.json())
+                        .then(data => {
+
+                            flipx = (view === 'side' || view ==='front')? true: false;
+                            flipy = (view === 'side')? true : false
+                            
+                            updatePreprocessCanvas(data, flipx, flipy);
+                            resetFiltersList();                            
+                        })
+                        .catch(err => console.log(err))
+                });
+
+            }
+
             function draw(img_array, type='RGB', flipx=false, flipy=false) {
                
                 var ctx = this.getContext('2d');
@@ -211,6 +313,18 @@
                 }
             }
 
+            
+            function postRequest(url, data={}) {
+                return fetch(url, {
+                    body: JSON.stringify(data),
+                    cache: 'no-cache',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    method: 'POST'
+                })
+            }
+            
             function main(){
 
                 data = {{brain.data}};
@@ -218,11 +332,12 @@
                 
                 brain_model.init();
                 brain_model.loadData(data);
+                
+                initPreprocessingFields()
             }
-
            
             main();
-        
+
         </script>
     </body>
  </html>
