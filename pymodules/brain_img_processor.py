@@ -156,6 +156,15 @@ def bilateral(data, win_size=5, multichannel=False):
 
 def watershed_segment(data):
 
-    return
+    marker = rank.gradient(data, disk(1)) < 10
+    marker = ndi.label(marker)[0]
 
+    gradient = rank.gradient(data, disk(1))
+    result = watershed(gradient, marker)
+
+    return {
+        'marker':marker,
+        'gradient': gradient,
+        'watershed': result
+    } 
     

@@ -57,7 +57,24 @@
 
         <fieldset>
             <legend>Segmentation</legend>
-            <input type='button' value='Apply Watershed' />
+            <div>
+                <input type='button' value='Apply Watershed' id='watershed_button'/>
+            </div>
+            <div>
+                <div>
+                    <h5>Marker</h5>
+                    <canvas id='marker'></canvas>
+                </div>
+                <div>
+                    <h5>Local Gradient</h5>
+                    <canvas id='gradient'></canvas>
+                </div>
+                <div>
+                    <h5>Watershed</h5>
+                    <canvas id='watershed'></canvas>
+                </div>
+            </div>
+            
         </fieldset>
 
         <fieldset>
@@ -280,8 +297,6 @@
                         .then(data => {
 
                             view = brain_model.currentView;
-
-
                             flipx = (view === 'side' || view ==='front')? true: false;
                             flipy = (view === 'side')? true : false;
                             updatePreprocessCanvas(data,flipx,flipy);
@@ -306,6 +321,35 @@
 
             }
 
+            function initSegmentationFields() {
+
+                watershed_button = document.getElementById('watershed_button');
+                marker = document.getElementById('marker');
+                gradient = document.getElementById('gradient');
+                watershed = document.getElementById('watershed');
+
+                marker.draw = draw;
+                gradient.draw = draw;
+                watershed.draw = draw;
+
+                watershed_button.addEventListener('click', function(event){
+                    postRequest('/applyWatershed')
+                        .then(response => response.json())
+                        .then(data => {
+                            // console.log(data)
+                            view = brain_model.currentView;
+                            flipx = (view === 'side' || view ==='front')? true: false;
+                            flipy = (view === 'side')? true : false;
+                            marker.draw(data['marker'], 'grayscale', flipx, flipy);
+                            gradient.draw(data['gradient'], 'grayscale', flipx, flipy);
+                            watershed.draw(data['watershed'], 'grayscale', flipx, flipy);
+                            
+                        })
+                        .catch(err => console.log(err));
+                })
+
+            }
+
             function draw(img_array, type='RGB', flipx=false, flipy=false) {
                
                 var ctx = this.getContext('2d');
@@ -327,7 +371,7 @@
 
                 this.height = imageHeight;
                 this.width = imageWidth;
-                
+
                 if(type === 'grayscale') {
                     for (i=startx, x=0; i != endx; i+=stepx, x++){
                         for(j=starty, y=0; j != endy;j+=stepy, y++){
@@ -362,7 +406,8 @@
                 brain_model.init();
                 brain_model.loadData(data);
                 
-                initPreprocessingFields()
+                initPreprocessingFields();
+                initSegmentationFields();
             }
            
             main();

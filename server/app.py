@@ -93,5 +93,16 @@ def isolateBrain():
 
     return jsonify(result)
 
+@app.route('/applyWatershed', methods=['POST'])
+def applyWatershed():
+    print('applying watershed')
+    brain_processor.apply_watershed()
+    result = brain_processor.get_watershed_output()
+
+    for key in result:
+        result[key] = result[key].tolist()
+
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)

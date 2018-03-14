@@ -9,7 +9,7 @@ class BrainProcessor:
         self.pre_process_output = None
         self.marker = None
         self.local_gradient = None 
-        self.watershed = None
+        self.watershed = None 
         self.current_view = None
         self.current_index = -1
         self.filters = {
@@ -17,6 +17,7 @@ class BrainProcessor:
             'equalize': equalize,
             'median': median
         }
+        self.watershed_output = None
 
     def load_mri(self, file_path):
 
@@ -96,4 +97,9 @@ class BrainProcessor:
         return
 
     def apply_watershed(self):
+
+        self.watershed_output = watershed_segment(self.pre_process_output)
         return
+
+    def get_watershed_output(self):
+        return self.watershed_output
