@@ -12,66 +12,61 @@
     </head>
     
     <body>
-        <div id="display">
-            <nav class="navbar navbar-inverse">
-                <div class="container-fluid">
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
-                            <ul class="dropdown-menu" id="fdropdown">
-                                <a id="open" class="container" href="/">Open</a>
-                                <a class="container">AI</a>
-                            </ul>
-                        </li>
-                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">Filters <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <form>
-                                    <label class="container">Normalized
-                                        <input type="radio" name="angle" value="front" class="radio" checked="checked" onclick="normalize();">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <label class="container">Median Filter
-                                        <input type="radio" name="angle" value="front" class="radio" onclick="median();">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <label class="container">Bilateral Filtered
-                                        <input type="radio" name="angle" value="front" class="radio" onclick="bilateral_filter();">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <label class="container">Watershed
-                                        <input type="radio" name="angle" value="front" class="radio" onclick="watershed();">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </form>
-                            </ul>
-                        </li>
-                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">Slice Area <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <label class="container">Top
-                                    <input type="radio" name="angle" checked="checked" value="top" id="top" onclick="changeTop();" class="radio">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <label class="container">Side
-                                    <input type="radio" name="angle" value="side" id="side" onclick="changeSide();" class="radio">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <label class="container">Front
-                                    <input type="radio" name="angle" value="front" id="front" onclick="changeFront();" class="radio">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </ul>
-                        </li>
-                    </ul>
+        <div class="container-fluid">
+            <div id="display" class="row">
+                <div id="img_display" class="container-fluid col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                    <div id="dropdown">Thing</div>
+                    
+                    <div id="img">
+                         <canvas id="canvas1"></canvas>
+                    </div>
+
+                    <div id="a">
+                        <input type="range" class="slider" id="myRange">
+
+                        <label id="sn">Slice Number: 
+                            <input type="number" name="slice_num" placeholder="Slice Number" class="input" id="num" min="0"><br>
+                        </label>
+                    </div>
                 </div>
-            </nav>
-            <div id="img_display">
-                <div id="img">
-                    <canvas id="canvas1"></canvas>
-                </div>
-                <div id="a">
-                    <input type="range" class="slider" id="myRange">
-                    <label id="sn">Slice Number: 
-                        <input type="number" name="slice_num" placeholder="Slice Number" class="input" id="num" min="0"><br>
-                    </label>
+
+
+                <div id="options" class="container-fluid col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    <div class="row">
+                        <label class="col-xl-12 col-lg-12 col-md-12 col-sm-12 row">Views</label>
+                        
+                        <div class="btn-group col-xl-12 col-lg-12 col-md-12 col-sm-12 row" role="group">
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Axial</button>    
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Sagittal</button>
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Coronal</button>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <label class="col-xl-12 col-lg-12 col-md-12 col-sm-12 container-fluid">Pre-Processing</label>
+                        
+                        <div class="btn-group col-xl-12 col-lg-12 col-md-12 col-sm-12 row" role="group">
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Skull Stripping</button>    
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Isolate Brain</button>
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Bilateral Filter</button>
+                        </div>
+                        
+                        <div class="btn-group col-xl-12 col-lg-12 col-md-12 col-sm-12 row" role="group">
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Bilateral Filter</button>    
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Histogram EQ</button>
+                            <button type="button" class="col-xl-4 col-lg-4 col-md-4 btn btn-light">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <label class="col-xl-12 col-lg-12 col-md-12 col-sm-12">Segmentation</label>
+                        
+                        <button class="btn btn-light" role="group">Apply Watershed</button>
+                    </div>
+                    
+                    <div id="detect">
+                        <button class="btn btn-light">Detect Tumor</button>
+                    </div>
                 </div>
             </div>
         </div>

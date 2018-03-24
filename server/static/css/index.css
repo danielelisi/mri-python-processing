@@ -3,16 +3,16 @@ body {
     margin: 0;
     justify-content: center;
     align-content: center;
+    min-height: 600px;
+    min-width: 700px;
 }
 
 #display {
-    width: 100vw;
     height: 100vh;
     background-color: #555;
 }
 
 #img_display {
-    width: 100%;
     background-color: #555;
     text-align: center;
 }
@@ -22,10 +22,6 @@ body {
     width: 50vh;
     display: inline-block;
     margin-top: 40px;
-    background-image: url("../../brain_img.jpg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
 }
 
 #canvas1 {
@@ -82,16 +78,15 @@ body {
     color: #222;
 }
 
-.dropdown-menu {
-    background: #EEE !important;
+#options .row {
+    padding-top: 20px;
+    text-align: center;
 }
 
-.dropdown-toggle {
-    cursor: pointer;
-}
-
-#fdropdown {
-    padding-left: 20px;
+#options label {
+    font-size: 45px;
+    text-align: center;
+    color: #CCC;
 }
 
 .container {
@@ -164,4 +159,9 @@ body {
 
 .input:hover {
     background-color: #CCC;
+}
+
+#detect {
+    text-align: center;
+    margin-top: 50px;
 }
