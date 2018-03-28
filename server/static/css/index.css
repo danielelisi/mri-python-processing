@@ -3,12 +3,33 @@ body {
     margin: 0;
     justify-content: center;
     align-content: center;
-    min-height: 600px;
     min-width: 700px;
 }
 
-#display {
+.container-fluid .row {
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.btn-group {
+    text-align: center;
+    align-content: center;
+    position: relative;
+}
+
+#filler {
     height: 100vh;
+    background-color: #555;
+    margin: 0;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#display {
+    height: 100%;
     background-color: #555;
 }
 
@@ -24,7 +45,7 @@ body {
     margin-top: 40px;
 }
 
-#canvas1 {
+.canvas1 {
     height: 100%;
     width: 100%;
 }
@@ -78,15 +99,16 @@ body {
     color: #222;
 }
 
-#options .row {
-    padding-top: 20px;
-    text-align: center;
-}
+.prep {}
 
-#options label {
+.a label {
     font-size: 45px;
     text-align: center;
     color: #CCC;
+}
+
+.row {
+    text-align: center;
 }
 
 .container {
@@ -161,7 +183,15 @@ body {
     background-color: #CCC;
 }
 
-#detect {
-    text-align: center;
-    margin-top: 50px;
+.h {
+    height: auto;
+}
+
+#watershed_button {
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.btn-light:hover {
+    background-color: #BBB;
 }

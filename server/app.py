@@ -37,7 +37,7 @@ def upload():
                     'data': data_as_list,
                     'dim': list(brain_data['dim'])
                 }
-                return render_template('brain_info.html', brain=brain)
+                return render_template('index.html', brain=brain)
             else:
                 return render_template('landing.html')
             
