@@ -9,111 +9,37 @@ import numpy as np
 import SimpleITK
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
+import os
 
+#Iterate over directory of brain tumor images
+#First part of the filename is survival days of the patient which helps determine the label the image will be stored as
+rootdir = 'C:/Users/gagan/Desktop/mri_training/labeled_data_test'
 listOfData = []
+labels = []
+for subdir, dirs, files in os.walk(rootdir):
+    for file in files:
+        filepath = (os.path.join(subdir, file))
+        splitFileName = file.split("_")
+        survivalDays = int(splitFileName[0])
+        input_image = SimpleITK.ReadImage(filepath)
+        data = SimpleITK.GetArrayFromImage(input_image)
+        listOfData.append(data)
+        if (survivalDays < 150):
+            labels.append('0-150')
+        elif (survivalDays >= 150 and survivalDays < 300):
+            labels.append('150-300')
+        elif (survivalDays >= 300 and survivalDays < 450):
+            labels.append('300-450')
+        elif (survivalDays >= 450 and survivalDays < 600):
+            labels.append('450-600')
+        else:
+            labels.append('600+')
 
-#****TO DO: CHANGE THIS TO A LOOP ITERATING OVER A DIRECTORY
-#Less then 500 days survived
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/147_Brats17_TCIA_242_1_flair.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/147_Brats17_TCIA_242_1_t1.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/147_Brats17_TCIA_242_1_t1ce.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/147_Brats17_TCIA_242_1_t2.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/153_Brats17_TCIA_167_1_flair.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/153_Brats17_TCIA_167_1_t1.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/153_Brats17_TCIA_167_1_t1ce.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/153_Brats17_TCIA_167_1_t2.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/434_Brats17_TCIA_184_1_flair.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/434_Brats17_TCIA_184_1_t1.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/434_Brats17_TCIA_184_1_t1ce.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/less500/434_Brats17_TCIA_184_1_t2.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-#More then 500 days survived
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/519_Brats17_TCIA_469_1_flair.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/519_Brats17_TCIA_469_1_t1.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/519_Brats17_TCIA_469_1_t1ce.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/519_Brats17_TCIA_469_1_t2.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/747_Brats17_TCIA_121_1_flair.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/747_Brats17_TCIA_121_1_t1.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/747_Brats17_TCIA_121_1_t1ce.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/747_Brats17_TCIA_121_1_t2.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/1458_Brats17_TCIA_278_1_flair.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/1458_Brats17_TCIA_278_1_t1.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/1458_Brats17_TCIA_278_1_t1ce.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-input_image = SimpleITK.ReadImage('C:/Users/gagan/Desktop/mri_training/more500/1458_Brats17_TCIA_278_1_t2.nii')
-data = SimpleITK.GetArrayFromImage(input_image)
-listOfData.append(data)
-
-#Set labels for all mri scans
-labels = ['less500', 'less500', 'less500', 'less500', 'less500', 'less500', 'less500', 'less500', 'less500', 'less500', 'less500', 'less500',
-          'more500', 'more500', 'more500', 'more500', 'more500', 'more500', 'more500', 'more500', 'more500', 'more500', 'more500', 'more500']
+print(labels.count('0-150'))
+print(labels.count('150-300'))
+print(labels.count('300-450'))
+print(labels.count('450-600'))
+print(labels.count('600+'))
 
 #Change list to array and reshape to add channel
 df_x = np.asarray(listOfData)
