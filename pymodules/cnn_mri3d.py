@@ -16,6 +16,7 @@ import os
 rootdir = 'C:/Users/gagan/Desktop/mri_training/labeled_data_test'
 listOfData = []
 labels = []
+i = 0
 for subdir, dirs, files in os.walk(rootdir):
     for file in files:
         filepath = (os.path.join(subdir, file))
@@ -23,6 +24,7 @@ for subdir, dirs, files in os.walk(rootdir):
         survivalDays = int(splitFileName[0])
         input_image = SimpleITK.ReadImage(filepath)
         data = SimpleITK.GetArrayFromImage(input_image)
+        data = data[70:80, 20:220, 20:220]
         listOfData.append(data)
         if (survivalDays < 150):
             labels.append('0-150')
@@ -43,7 +45,7 @@ print(labels.count('600+'))
 
 #Change list to array and reshape to add channel
 df_x = np.asarray(listOfData)
-df_x = df_x.reshape(len(listOfData), 155, 240, 240, 1)
+df_x = df_x.reshape(len(listOfData), 10, 200, 200, 1)
 
 #Change list to nd array, change labels to integers ex) label1 becomes 0, label2 becomes 1, label3 becomes 2 etc...
 y = np.array(labels)
@@ -71,9 +73,9 @@ nb_pool = [2, 3]
 # level of convolution to perform (CONV x CONV)
 nb_conv = [3, 5]
 
-img_depth = 155
-img_rows = 240
-img_cols = 240
+img_depth = 10
+img_rows = 200
+img_cols = 200
 numberOfLabels = len(set(labels))
 
 
@@ -89,24 +91,6 @@ model.add(Conv3D(
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Conv3D(
         nb_filters[2],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
-        activation='relu'
-))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
-model.add(Conv3D(
-        nb_filters[3],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
-        activation='relu'
-))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
-model.add(Conv3D(
-        nb_filters[4],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
-        activation='relu'
-))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
-model.add(Conv3D(
-        nb_filters[5],
         (nb_conv[0], nb_conv[0], nb_conv[0]),
         activation='relu'
 ))
