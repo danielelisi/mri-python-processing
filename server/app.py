@@ -40,16 +40,12 @@ def upload():
                 return render_template('index.html', brain=brain)
             else:
                 return render_template('landing.html')
-            
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-@app.route('/landing')
-def index():
-    return render_template('landing.html')
 
 @app.route('/applyFilter', methods=['POST'])
 def applyFilter():
@@ -60,6 +56,7 @@ def applyFilter():
 
     result = brain_processor.get_pre_process_output().tolist()
     return jsonify(result)
+
 
 @app.route('/setPreprocessImage', methods=['POST'])
 def setPreprocessImage():
@@ -77,6 +74,7 @@ def setPreprocessImage():
 
     return jsonify(result)
 
+
 @app.route('/resetPreprocessImage', methods=['POST'])
 def resetPreprocessImage():
     print('resetting pre process image')
@@ -85,6 +83,7 @@ def resetPreprocessImage():
 
     return jsonify(result)
 
+
 @app.route('/isolateBrain', methods=['POST'])
 def isolateBrain():
     print('Isolating brain')
@@ -92,6 +91,7 @@ def isolateBrain():
     result = brain_processor.get_pre_process_output().tolist()
 
     return jsonify(result)
+
 
 @app.route('/applyWatershed', methods=['POST'])
 def applyWatershed():
@@ -103,6 +103,7 @@ def applyWatershed():
         result[key] = result[key].tolist()
 
     return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
