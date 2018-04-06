@@ -1,5 +1,6 @@
 import keras
 from keras.models import Sequential
+from keras.models import load_model
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Conv3D, MaxPooling3D
 from sklearn.model_selection import train_test_split
@@ -146,4 +147,6 @@ model.summary()
 #Train the model on x epochs and save the entire model (architecture/weights/biases/optimizer)
 model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=2, verbose=1)
 model.save('mri_model.h5')
-
+#model.load_model('mri_model.h5')
+print(model.predict(x_test[0:10]))
+print(y_test[0:10])
