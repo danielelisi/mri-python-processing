@@ -1,4 +1,4 @@
-from brain_img_processor import BrainData, isolate_brain, segment, denoise, normalize_255, equalize
+from brain_img_processor import BrainData, isolate_brain, segment, normalize_255, equalize
 import numpy as np
 import matplotlib.pyplot as plt #library to view images
 from skimage.restoration import denoise_bilateral
@@ -14,11 +14,11 @@ from scipy import signal
 
 brain = BrainData('data/brain.mha')
 
-slice_top = brain.get_slice(BrainData.TOP_PROF, 120)
+slice_top = brain.get_slice(BrainData.TOP_PROF, 77)
 slice_side = brain.get_slice(BrainData.SIDE_PROF, 100)
 slice_front = brain.get_slice(BrainData.FRONT_PROF, 117)
 
-isolated_brain = isolate_brain(slice_front)
+isolated_brain = isolate_brain(slice_top)
 brain_data = isolated_brain['data']
 
 #first row sequence: bilateral filter->normalization->equalization
@@ -105,8 +105,9 @@ ax2[1,2].set_title("local gradient")
 ax2[1,3].imshow(watershed2)
 ax2[1,3].set_title("watershed")
 
-brain_vec1 = brain_data.ravel()
+brain_vec1 = normal2.ravel()
 brain_vec1 = brain_vec1[brain_vec1 > 0]
+print(brain_vec1.max())
 n , bins, patches = ax3[0,0].hist(brain_vec1, bins=range(brain_vec1.max()+1))
 
 # taking the values from the histogram and applying a moving point average to them to smooth curve for analysis
