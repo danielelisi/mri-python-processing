@@ -1,9 +1,10 @@
 import SimpleITK
 from skimage.measure import label, regionprops
-from skimage.restoration import denoise_nl_means, estimate_sigma, denoise_tv_chambolle
+from skimage.restoration import denoise_bilateral
 from scipy import ndimage as ndi
 from skimage.filters import rank, gaussian
 from skimage.morphology import watershed, disk
+from skimage import exposure
 import numpy as np
 
 
@@ -28,7 +29,7 @@ class BrainData:
         # do some checking here to make sure it is a 3d image
 
         # get the image data from mha
-        self.data = SimpleITK.GetArrayFromImage(input_image)
+        self.data = normalize_255(SimpleITK.GetArrayFromImage(input_image))
         self.dimensions = self.data.shape
 
     def get_slice(self, profile, index):
@@ -55,7 +56,6 @@ class BrainData:
 ############################################
 # HELPER FUNCTIONS
 ############################################
-
 
 def isolate_brain(img_array):
 
@@ -96,9 +96,6 @@ def isolate_brain(img_array):
 
     return result
 
-# TODO need to change values for denoising to get optimum 
-# values (we need to decrease the number of regions detected to make it faster)
-
 
 def segment(brain_img):
 
@@ -119,47 +116,14 @@ def segment(brain_img):
     return labels
 
 
-def check_brain(brain_img):
-    '''
-    Use gray value histogram of image to check whether tumor exists
-
-    Returns True if tumor exists
-    else returns false
-    '''
-    histogram = np.histogram(brain_img,range=range(256))
-    return None
-
-
 def get_tumor_region(label, image):
     return None
 
 
-def denoise(image):
-
-    '''implement a specific denoinising algorithm'''
-    sigma = 0.110
-
-    # estimate the noise standard deviation from the noisy image
-    sigma_est = np.mean(estimate_sigma(image, multichannel=False))
-    print("Estimated noise standard deviation ={}".format(sigma_est))
-
-    patch_kw = dict(patch_size=5, patch_distance=6, multichannel=False)
-
-    # slow algorith, sigma provided
-
-    denoise = denoise_nl_means(image, h=0.8 * sigma_est, fast_mode=False, **patch_kw)
-    denoise = denoise.astype(dtype="uint16")
-
-    print("dimension")
-    print(denoise.ndim)
-    return denoise
-
-
-def normalize_255(image, clip_zero=False):
+def normalize_255(image):
 
     input_data = image
-    if clip_zero:
-        input_data = input_data[image>0]
+   
 
     min = np.amin(input_data)
     max = np.amax(input_data)
@@ -174,11 +138,59 @@ def normalize_255(image, clip_zero=False):
     return normalized
 
 
-def equalize(image):
+def equalize(image, lower_bound=5, upper_bound=95):
 
-    h = np.histogram(image, bins=256)[0]
-    H = np.cumsum(h) / float(np.sum(h))
-    print(h.shape)
-    print(H.shape)
-    e = np.floor(H[image.flatten()] * 255.)
-    return e.reshape(image.shape).astype('uint8')
+
+    lb, ub = np.percentile(image, (lower_bound, upper_bound))
+    img_rescale = exposure.rescale_intensity(image, in_range=(lb, ub))
+
+    return img_rescale
+ 
+
+def median(data):
+
+    return rank.median(data, disk(1))
+
+def bilateral(data, win_size=5, multichannel=False):
+
+    return denoise_bilateral(data, win_size=win_size, multichannel=multichannel)
+
+def watershed_segment(data):
+
+    marker = rank.gradient(data, disk(1)) < 10
+    marker = ndi.label(marker)[0]
+
+    gradient = rank.gradient(data, disk(1))
+    result = watershed(gradient, marker)
+
+    return {
+        'marker':marker,
+        'gradient': gradient,
+        'watershed': result
+    } 
+    
+
+def detect_tumor(labeled_image, original_image, threshold=150):
+
+    regions = regionprops(labeled_image, original_image)
+
+    # area of the brain
+    # mean intensity
+
+    result = np.zeros(original_image.shape,dtype=np.uint8)
+    area = 0
+
+    for region in regions:
+        if region.mean_intensity >= threshold:
+            area += region.area
+            min_row, min_col, max_row, max_col = region.bbox
+            target_area = result[min_row:max_row, min_col:max_col] 
+            result[min_row:max_row, min_col:max_col] = np.logical_or(target_area, region.image)
+
+    return {
+        'overlay': result,
+        'original': original_image,
+        'area': int(area)
+    }
+
+
