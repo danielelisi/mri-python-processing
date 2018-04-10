@@ -45,34 +45,37 @@ def reshape_and_pad(img_array, dim):
     result = img_array
 
     img_dim = result.shape
+    print(img_dim)
 
     diff_d = dim[0] - img_dim[0]
     diff_h = dim[1] - img_dim[1]
     diff_w = dim[2] - img_dim[2]
 
+    print(diff_d, diff_h, diff_w)
     # reshape and pad depth
     is_odd = (diff_d % 2 == 1)
-    half = abs(diff_d // 2)
+    half = abs(diff_d) // 2
     if diff_d < 0:
-        result = result[half: -(half-1 if is_odd else half)]
+        result = result[half: -(half+1 if is_odd else half)]
     else:
-        result = np.pad(result, ((half, half+1 if is_odd else half ),), 'constant')
+        result = np.pad(result, ((half, half+1 if is_odd else half ),(0,0),(0,0)), 'constant')
 
     # reshape and pad height
     is_odd = (diff_h % 2 == 1)
-    half = abs(diff_h // 2)
+    half = abs(diff_h) // 2
     if diff_h < 0:
-        result = result[:, half: -(half-1 if is_odd else half)]
+        result = result[:, half: -(half+1 if is_odd else half),:]
     else:
-        result = np.pad(result, ((0,0),(half, half+1 if is_odd else half ),), 'constant')
+        result = np.pad(result, ((0,0),(half, half+1 if is_odd else half ),(0,0)), 'constant')
 
-    # reshape and pad width
+    print(result.shape)
+    # reshape and pad width.
     is_odd = (diff_w % 2 == 1)
-    half = abs(diff_w // 2)
+    half = abs(diff_w) // 2
     if(diff_w < 0):
-        result = result[:, :,half: -(half-1 if is_odd else half)]
+        result = result[:, :,half: -(half+1 if is_odd else half)]
     else:
-        result = np.pad(result, ((0,0),(0,0),(half, half+1 if is_odd else half ),), 'constant')
+        result = np.pad(result, ((0,0),(0,0),(half, half+1 if is_odd else half )), 'constant')
 
     return result
 
@@ -112,11 +115,13 @@ if __name__ == '__main__':
     pass in an argument which is the location of mha file
     '''
 
-    try:
-        input_image = SimpleITK.ReadImage(sys.argv[1])
-    except:
-        raise Exception('file not found')
+    # try:
+    #     input_image = SimpleITK.ReadImage(sys.argv[1])
+    # except:
+    #     raise Exception('file not found')
 
-    data = SimpleITK.GetArrayFromImage(input_image)
+    #data = np.arange#SimpleITK.GetArrayFromImage(input_image)
+    result = reshape_and_pad(np.zeros((41,58,35)),(50,50,50))
+    print(result.shape)
 
-    trimmed = trim_array_3d(data)
+    # trimmed = trim_array_3d(data)
