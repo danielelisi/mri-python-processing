@@ -20,9 +20,9 @@ def trim_array_3d(img_array, thresh=50):
     print(d, h, w)
     #iterate through depth
 
-    min_d, max_d = get_min_max(d, img_array, 'depth', thresh)
-    min_h, max_h = get_min_max(h, img_array, 'height', thresh)
-    min_w, max_w = get_min_max(w, img_array, 'width', thresh)
+    min_d, max_d = get_min_max(d, img_array, thresh)
+    min_h, max_h = get_min_max(h, np.transpose(img_array, axes=(1,0,2)), thresh)
+    min_w, max_w = get_min_max(w, np.transpose(img_array, axes=(2,0,1)), thresh)
 
     print(f'({d},{h},{w}) trimmed to ({max_d-min_d},{max_h-min_h},{max_w-min_w})')
     print(min_d, max_d, min_h, max_h, min_w, max_w)
@@ -30,7 +30,7 @@ def trim_array_3d(img_array, thresh=50):
     return img_array[min_d:max_d, min_h:max_h, min_w:max_w]
  
 
-def get_min_max(size, img_array, axes, thresh):
+def get_min_max(size, img_array, thresh):
 
     found_ub, found_lb = False, False
     min, max = 0, 0
@@ -44,12 +44,7 @@ def get_min_max(size, img_array, axes, thresh):
 
         if not found_lb:
 
-            if(axes == 'depth'):
-                check_array = img_array[i].flatten()
-            elif(axes == 'height'):
-                check_array = img_array[:,i,:].flatten()
-            else:
-                check_array = img_array[:,:,i].flatten()
+            check_array = img_array[i].flatten()
 
             if np.trim_zeros(check_array).shape[0] >= thresh:
                 found_lb = True
@@ -57,12 +52,7 @@ def get_min_max(size, img_array, axes, thresh):
 
         if not found_ub:
             
-            if(axes == 'depth'):
-                check_array = img_array[k].flatten()
-            elif(axes == 'height'):
-                check_array = img_array[:,k,:].flatten()
-            else:
-                check_array = img_array[:,:,k].flatten()
+            check_array = img_array[k].flatten()
 
             if np.trim_zeros(check_array).shape[0] >= thresh:
                 found_ub = True
