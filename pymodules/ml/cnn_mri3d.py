@@ -11,22 +11,28 @@ import SimpleITK
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 import os
+import matplotlib.pyplot as plt
+from util_3d import *
+import matplotlib.pyplot as plt
+import h5py
 
 #Iterate over directory of brain tumor images
 #First part of the filename is survival days of the patient which helps determine the label the image will be stored as
-rootdir = 'C:/Users/gagan/Desktop/mri_training/labeled_data_test'
+rootdir = 'C:/Users/gagan/Desktop/mri_training/seg_test'
 listOfData = []
 labels = []
 i = 0
 for subdir, dirs, files in os.walk(rootdir):
     for file in files:
+        print(' ')
+        print(file)
         filepath = (os.path.join(subdir, file))
         splitFileName = file.split("_")
         survivalDays = int(splitFileName[0])
         input_image = SimpleITK.ReadImage(filepath)
         data = SimpleITK.GetArrayFromImage(input_image)
-        #data = data[70:80, 20:220, 20:220]
-        listOfData.append(data)
+        trimmedData = trim_array_3d(data)
+        listOfData.append(trimmedData)
         if (survivalDays < 150):
             labels.append('0-150')
         elif (survivalDays >= 150 and survivalDays < 300):
@@ -37,7 +43,6 @@ for subdir, dirs, files in os.walk(rootdir):
             labels.append('450-600')
         else:
             labels.append('600+')
-
 print(labels.count('0-150'))
 print(labels.count('150-300'))
 print(labels.count('300-450'))
@@ -104,12 +109,6 @@ model.add(Conv3D(
         activation='relu'
 ))
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
-model.add(Conv3D(
-        nb_filters[4],
-        (nb_conv[0], nb_conv[1], nb_conv[1]),
-        activation='relu'
-))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Flatten())
 model.add(Dense(100))
 model.add(Dropout(0.5))
@@ -137,9 +136,7 @@ model.add(Dense(numberOfLabels, kernel_initializer="normal"))
 model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['mse', 'accuracy'])
 model.summary()
-'''
 
-'''
 #CNN model v1
 model = Sequential()
 model.add(Conv3D(
@@ -162,7 +159,7 @@ model.summary()
 model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=2, verbose=1)
 model.save('mri_model.h5')
 #model.load_model('mri_model.h5')
-encodedPrediction = model.predict(x_test[0:10])
+encodedPrediction = model.predict(x_test[:])
 print(encodedPrediction)
 prediction = label_encoder.inverse_transform([argmax(encodedPrediction[0])])
 print(prediction)
