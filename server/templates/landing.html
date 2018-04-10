@@ -6,21 +6,32 @@
         <link rel="stylesheet" type="text/css" href="../static/css/landing.css"/>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     
     <body>
-        <div id="display">
-            <form id='upload' enctype="multipart/form-data" action="http://localhost:5000/upload_file" method="POST">
-                <div class="file-upload">
-                    <div class="file-select">
-                        <div class="file-select-button" id="fileName">Choose File</div>
-                        <div class="file-select-name" id="noFile">No file chosen...</div> 
-                        <input type="file" accept=".mha" name="chooseFile" id="chooseFile" multiple>
-                    </div>
+        <div id="display" class="container-fluid">
+            <div class="row">
+                <div class="thing col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <h1 id="title">MRI Project</h1>
+                    <h3 id="description">
+                    This application allows users to load and view mha or nii files. To use this application, load a file by clicking "Choose File" on the left, then click "Load". The viewer then will appear. To change the slice, the user can either move the slider or change the number in the text input. Double click the image in order to use that slice for the pre-processing and segmentation sections. Click the next button to get to the pre-processing section. For the pre-processing section, click a button in order to apply that filter. Click the next button to get to the segmentation section or click the back button to get back to the views section. For the segmentation, click the apply watershed button in order to apply multiple filters. Click the back button to get back to the pre-processing section. To change the current mha or nii file, click the current file name in the top left and click the file desired.
+                    </h3>
                 </div>
-                <input id="submit" type="submit" value="Load">
-            </form>
+                
+                <form class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6" id='upload' enctype="multipart/form-data" action="http://localhost:5000/upload_file" method="POST">
+                    <div class="file-upload">
+                        <div class="file-select">
+                            <div class="file-select-button" id="fileName">Choose File</div>
+                            <div class="file-select-name" id="noFile">No file chosen...</div> 
+                            <input type="file" accept=".mha" name="chooseFile" id="chooseFile" multiple>
+                        </div>
+                    </div>
+                    <input id="submit" type="submit" value="Load">
+                </form>
+            </div>
         </div>
            
         <script>
