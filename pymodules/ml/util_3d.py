@@ -8,11 +8,15 @@ import SimpleITK
 import numpy as np
 import sys
 
-def trim_array_3d(img_array, thresh=50):
+def trim_array_3d(img_array, dim=(50,50,50), thresh=50):
     '''
     Trim a 3d array
 
     default threshold is 50 pixels
+
+    set dim to 'unbounded' to remove restrictions
+    otherwise its default to 50x50x50
+
     '''
 
     d, h, w = img_array.shape
@@ -27,8 +31,50 @@ def trim_array_3d(img_array, thresh=50):
     print(f'({d},{h},{w}) trimmed to ({max_d-min_d},{max_h-min_h},{max_w-min_w})')
     print(min_d, max_d, min_h, max_h, min_w, max_w)
 
-    return img_array[min_d:max_d, min_h:max_h, min_w:max_w]
+    result = img_array[min_d:max_d, min_h:max_h, min_w:max_w]
+
+    if dim != 'unbounded':
+        result = reshape_and_pad(result, dim)
+
+    print(f'Result image shape is {result.shape}')
+
+    return result
  
+def reshape_and_pad(img_array, dim):
+
+    result = img_array
+
+    img_dim = result.shape
+
+    diff_d = dim[0] - img_dim[0]
+    diff_h = dim[1] - img_dim[1]
+    diff_w = dim[2] - img_dim[2]
+
+    # reshape and pad depth
+    is_odd = (diff_d % 2 == 1)
+    half = abs(diff_d // 2)
+    if diff_d < 0:
+        result = result[half: -(half-1 if is_odd else half)]
+    else:
+        result = np.pad(result, ((half, half+1 if is_odd else half ),), 'constant')
+
+    # reshape and pad height
+    is_odd = (diff_h % 2 == 1)
+    half = abs(diff_h // 2)
+    if diff_h < 0:
+        result = result[:, half: -(half-1 if is_odd else half)]
+    else:
+        result = np.pad(result, ((0,0),(half, half+1 if is_odd else half ),), 'constant')
+
+    # reshape and pad width
+    is_odd = (diff_w % 2 == 1)
+    half = abs(diff_w // 2)
+    if(diff_w < 0):
+        result = result[:, :,half: -(half-1 if is_odd else half)]
+    else:
+        result = np.pad(result, ((0,0),(0,0),(half, half+1 if is_odd else half ),), 'constant')
+
+    return result
 
 def get_min_max(size, img_array, thresh):
 
