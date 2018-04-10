@@ -25,7 +25,7 @@ for subdir, dirs, files in os.walk(rootdir):
         survivalDays = int(splitFileName[0])
         input_image = SimpleITK.ReadImage(filepath)
         data = SimpleITK.GetArrayFromImage(input_image)
-        data = data[70:80, 20:220, 20:220]
+        #data = data[70:80, 20:220, 20:220]
         listOfData.append(data)
         if (survivalDays < 150):
             labels.append('0-150')
@@ -46,7 +46,7 @@ print(labels.count('600+'))
 
 #Change list to array and reshape to add channel
 df_x = np.asarray(listOfData)
-df_x = df_x.reshape(len(listOfData), 10, 200, 200, 1)
+df_x = df_x.reshape(len(listOfData), len(listOfData[0]), len(listOfData[0][0]), len(listOfData[0][0][0]), 1)
 
 #Change list to nd array, change labels to integers ex) label1 becomes 0, label2 becomes 1, label3 becomes 2 etc...
 y = np.array(labels)
@@ -66,7 +66,7 @@ df_y = np.array(df_y)
 x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.25, random_state=4)
 
 # number of convolutional filters to use
-nb_filters = [8, 32, 64, 128, 256, 512]
+nb_filters = [8, 16, 32, 64, 128, 256, 512]
 
 # level of pooling to perform (POOL x POOL)
 nb_pool = [2, 3]
@@ -74,25 +74,39 @@ nb_pool = [2, 3]
 # level of convolution to perform (CONV x CONV)
 nb_conv = [3, 5]
 
-img_depth = 10
-img_rows = 200
-img_cols = 200
-numberOfLabels = len(set(labels))
+#number of channels
+nb_channels = 1
 
+img_depth = len(listOfData[0])
+img_cols = len(listOfData[0][0])
+img_rows = len(listOfData[0][0][0])
+numberOfLabels = len(set(labels))
 
 #CNN Model v3
 model = Sequential()
 model.add(Conv3D(
         nb_filters[1],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
         data_format='channels_last',
-        input_shape=(img_depth, img_rows, img_cols, 1),
+        input_shape=(img_depth, img_rows, img_cols, nb_channels),
         activation='relu'
 ))
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Conv3D(
         nb_filters[2],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
+        activation='relu'
+))
+model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
+model.add(Conv3D(
+        nb_filters[3],
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
+        activation='relu'
+))
+model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
+model.add(Conv3D(
+        nb_filters[4],
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
         activation='relu'
 ))
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
@@ -148,5 +162,7 @@ model.summary()
 model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=2, verbose=1)
 model.save('mri_model.h5')
 #model.load_model('mri_model.h5')
-print(model.predict(x_test[0:10]))
-print(y_test[0:10])
+encodedPrediction = model.predict(x_test[0:10])
+print(encodedPrediction)
+prediction = label_encoder.inverse_transform([argmax(encodedPrediction[0])])
+print(prediction)
