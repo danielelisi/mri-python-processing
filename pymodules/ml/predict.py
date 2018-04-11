@@ -9,7 +9,7 @@ from keras.models import load_model
 from util_3d import *
 
 
-def predict(tumor_img_filepath)
+def encodedPrediction(tumor_img_filepath):
     labels = ['0-150', '150-300', '300-450', '450-600', '600+']
     label_encoder = LabelEncoder()
     y = np.array(labels)
@@ -20,6 +20,8 @@ def predict(tumor_img_filepath)
     trimmedArray = trim_array_3d(rawArray)
     inputData = trimmedArray.reshape(1, len(trimmedArray), len(trimmedArray[0]), len(trimmedArray[0][0]), 1)
     encodedPrediction = model.predict(inputData)
+    return encodedPrediction
+    
     print(encodedPrediction)
     prediction = label_encoder.inverse_transform([argmax(encodedPrediction)])
     print(prediction)

@@ -11,9 +11,7 @@ import SimpleITK
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 import os
-import matplotlib.pyplot as plt
 from util_3d import *
-import matplotlib.pyplot as plt
 import h5py
 
 #Iterate over directory of brain tumor images
@@ -91,7 +89,7 @@ numberOfLabels = len(set(labels))
 model = Sequential()
 model.add(Conv3D(
         nb_filters[1],
-        (nb_conv[0], nb_conv[1], nb_conv[1]),
+        (nb_conv[1], nb_conv[1], nb_conv[1]),
         data_format='channels_last',
         input_shape=(img_depth, img_rows, img_cols, nb_channels),
         activation='relu'
@@ -99,18 +97,18 @@ model.add(Conv3D(
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Conv3D(
         nb_filters[2],
-        (nb_conv[0], nb_conv[1], nb_conv[1]),
+        (nb_conv[0], nb_conv[0], nb_conv[0]),
         activation='relu'
 ))
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Conv3D(
         nb_filters[3],
-        (nb_conv[0], nb_conv[1], nb_conv[1]),
+        (nb_conv[0], nb_conv[0], nb_conv[0]),
         activation='relu'
 ))
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Flatten())
-model.add(Dense(100))
+model.add(Dense(1000))
 model.add(Dropout(0.5))
 model.add(Dense(numberOfLabels))
 model.add(Activation('softmax'))
@@ -157,9 +155,10 @@ model.summary()
 
 #Train the model on x epochs and save the entire model (architecture/weights/biases/optimizer)
 model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=10, verbose=1)
-model.save('mri_model.h5')
+model.save('mri_modelv2.h5')
 #model.load_model('mri_model.h5')
 encodedPrediction = model.predict(x_test[:])
 print(encodedPrediction)
+print(y_test[:])
 prediction = label_encoder.inverse_transform([argmax(encodedPrediction[0])])
 print(prediction)
