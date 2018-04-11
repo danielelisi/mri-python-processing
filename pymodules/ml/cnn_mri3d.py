@@ -16,7 +16,7 @@ import h5py
 
 #Iterate over directory of brain tumor images
 #First part of the filename is survival days of the patient which helps determine the label the image will be stored as
-rootdir = 'C:/Users/gagan/Desktop/mri_training/seg_test'
+rootdir = 'C:/Users/gagan/Desktop/mri_training/trimmed_seg'
 listOfData = []
 labels = []
 i = 0
@@ -29,8 +29,8 @@ for subdir, dirs, files in os.walk(rootdir):
         survivalDays = int(splitFileName[0])
         input_image = SimpleITK.ReadImage(filepath)
         data = SimpleITK.GetArrayFromImage(input_image)
-        trimmedData = trim_array_3d(data)
-        listOfData.append(trimmedData)
+        #data = trim_array_3d(data)
+        listOfData.append(data)
         if (survivalDays < 150):
             labels.append('0-150')
         elif (survivalDays >= 150 and survivalDays < 300):
@@ -108,7 +108,7 @@ model.add(Conv3D(
 ))
 model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
 model.add(Flatten())
-model.add(Dense(1000))
+model.add(Dense(128))
 model.add(Dropout(0.5))
 model.add(Dense(numberOfLabels))
 model.add(Activation('softmax'))
