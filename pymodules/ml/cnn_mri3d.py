@@ -156,7 +156,7 @@ model.summary()
 '''
 
 #Train the model on x epochs and save the entire model (architecture/weights/biases/optimizer)
-model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=2, verbose=1)
+model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=10, verbose=1)
 model.save('mri_model.h5')
 #model.load_model('mri_model.h5')
 encodedPrediction = model.predict(x_test[:])
