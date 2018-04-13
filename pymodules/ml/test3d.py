@@ -31,7 +31,7 @@ Parameters
 Trim and reshape tumor img
 Get encoded prediction of labels based off model
 '''
-def getEncodedPrediction(model_filepath, tumor_img_filepath,  dim=(80,80,50)):
+def getEncodedPrediction(model_filepath, tumor_img_filepath,  dim=(50,80,80)):
     model = load_model(model_filepath)
     input_image = SimpleITK.ReadImage(tumor_img_filepath)
     rawArray = SimpleITK.GetArrayFromImage(input_image)
