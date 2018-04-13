@@ -118,22 +118,13 @@ def segment(brain_img):
 
 def get_tumor_region(label, image):
     return None
-<<<<<<< HEAD
-=======
 
 
 def normalize_255(image):
->>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
 
     input_data = image
    
 
-<<<<<<< HEAD
-def normalize_255(image):
-
-    input_data = image
-   
-=======
     min = np.amin(input_data)
     max = np.amax(input_data)
     
@@ -157,7 +148,6 @@ def equalize(image, lower_bound=5, upper_bound=95):
  
 
 def median(data):
->>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
 
     return rank.median(data, disk(1))
 
@@ -204,35 +194,3 @@ def detect_tumor(labeled_image, original_image, threshold=150):
     }
 
 
-<<<<<<< HEAD
-    # need to disregard 0 values
-    h = np.histogram(image, bins=256)[0]
-    H = np.cumsum(h) / float(np.sum(h))
- 
-    e = np.floor(H[image.flatten()] * 255.)
-    return e.reshape(image.shape).astype('uint8')
-
-def median(data):
-
-    return rank.median(data, disk(1))
-
-def bilateral(data, win_size=5, multichannel=False):
-
-    return denoise_bilateral(data, win_size=win_size, multichannel=multichannel)
-
-def watershed_segment(data):
-
-    marker = rank.gradient(data, disk(1)) < 10
-    marker = ndi.label(marker)[0]
-
-    gradient = rank.gradient(data, disk(1))
-    result = watershed(gradient, marker)
-
-    return {
-        'marker':marker,
-        'gradient': gradient,
-        'watershed': result
-    } 
-    
-=======
->>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
