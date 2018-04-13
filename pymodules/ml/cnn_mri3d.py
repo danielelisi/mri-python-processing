@@ -13,6 +13,7 @@ from sklearn.preprocessing import OneHotEncoder
 import os
 from util_3d import *
 import h5py
+import warnings
 
 #Iterate over directory of brain tumor images
 #First part of the filename is survival days of the patient which helps determine the label the image will be stored as
@@ -31,6 +32,13 @@ for subdir, dirs, files in os.walk(rootdir):
         data = SimpleITK.GetArrayFromImage(input_image)
         #data = trim_array_3d(data)
         listOfData.append(data)
+
+        if (survivalDays <= 365):
+            labels.append('Less than 1 Year')
+        else:
+            labels.append('More than 1 Year')
+
+'''
         if (survivalDays < 150):
             labels.append('0-150')
         elif (survivalDays >= 150 and survivalDays < 300):
@@ -46,6 +54,10 @@ print(labels.count('150-300'))
 print(labels.count('300-450'))
 print(labels.count('450-600'))
 print(labels.count('600+'))
+'''
+
+print(labels.count('Less than 1 Year'))
+print(labels.count('More than 1 Year'))
 
 #Change list to array and reshape to add channel
 df_x = np.asarray(listOfData)
@@ -89,24 +101,24 @@ numberOfLabels = len(set(labels))
 model = Sequential()
 model.add(Conv3D(
         nb_filters[1],
-        (nb_conv[1], nb_conv[1], nb_conv[1]),
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
         data_format='channels_last',
         input_shape=(img_depth, img_rows, img_cols, nb_channels),
         activation='relu'
 ))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
+model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[1], nb_pool[1])))
 model.add(Conv3D(
         nb_filters[2],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
         activation='relu'
 ))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
+model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[1], nb_pool[1])))
 model.add(Conv3D(
         nb_filters[3],
-        (nb_conv[0], nb_conv[0], nb_conv[0]),
+        (nb_conv[0], nb_conv[1], nb_conv[1]),
         activation='relu'
 ))
-model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[0], nb_pool[0])))
+model.add(MaxPooling3D(pool_size=(nb_pool[0], nb_pool[1], nb_pool[1])))
 model.add(Flatten())
 model.add(Dense(128))
 model.add(Dropout(0.5))
@@ -154,11 +166,21 @@ model.summary()
 '''
 
 #Train the model on x epochs and save the entire model (architecture/weights/biases/optimizer)
-model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=10, verbose=1)
-model.save('mri_modelv2.h5')
+model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=7, verbose=1)
+model.save('mri_modelv3.h5')
 #model.load_model('mri_model.h5')
 encodedPrediction = model.predict(x_test[:])
-print(encodedPrediction)
-print(y_test[:])
-prediction = label_encoder.inverse_transform([argmax(encodedPrediction[0])])
-print(prediction)
+
+#Print Matches
+match = 0
+for index in range(0, 41):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    actual = label_encoder.inverse_transform([argmax(y_test[index])])
+    prediction = label_encoder.inverse_transform([argmax(encodedPrediction[index])])
+    print(encodedPrediction[index])
+    print('Highest Predicted Label: ', prediction)
+    print('Actual Label: ', actual)
+    if actual == prediction:
+        match += 1
+    print('Total Matches: ', match)
+    print(' ')
