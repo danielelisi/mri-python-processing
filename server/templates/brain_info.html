@@ -199,14 +199,14 @@
                                     <input class="waves-effect waves-light btn-large col s12" id='isolate_brain'
                                     type='button' value='Isolate Brain'/>
                                     <p>
-                                        Description
+                                        this takes the selected image and removes the black background. it makes it easier to see the brain and helps with the other processing functions.
                                     </p>
                                 </div>
                                 <div class="col s6">
                                     <input class="waves-effect waves-light btn-large col s12" id='histo_filter'
                                     type='button' value='Histogram EQ'/>
                                     <p>
-                                        Description
+                                        this adjusts the image light intensity to enhance contrast. makes image processing easier by making the regions more discernible. this may increase intensity of irrelevant information in image.
                                     </p>
                                 </div>
                             </div>
@@ -218,14 +218,14 @@
                                     <input class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='bilateral_filter'
                                     type='button' value='Bilateral Filter'/>
                                     <p>
-                                        Description
+                                        this replaces the light intensity values of the image with weighted averages using nearby pixels. this reduces the number of regions that will be detected in processing making tumor easier to detect. can potentially add extra information to image that was not there.
                                     </p>
                                 </div>
                                 <div class="col s6">
                                     <input class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='median_filter'
                                     type='button' value='Median Filter'/>
                                     <p>
-                                        Description
+                                        this replaces the light intensity values of the image with the median value using nearby pixels. this is done to remove noise while preserving edge details for the image.
                                     </p>
     
                                 </div>
@@ -276,19 +276,19 @@
                             <div class="col s4" style="padding-left:20px;padding-right:20px">
                                 <canvas id='marker'></canvas>
                                 <h4>Marker</h4>
-                                <p>Description</p>
+                                <p>the central points of the regions of the brain. used as a start point in determining the seperate regions</p>
                             </div>
 
                             <div class="col s4" style="padding-left:20px;padding-right:20px">
                                 <canvas id='gradient'></canvas>
                                 <h4>Local Gradient</h4>
-                                <p>Description</p>
+                                <p>the area in which the regions of the brain meet each other.</p>
                             </div>
 
                             <div class="col s4" style="padding-left:20px;padding-right:20px">
                                 <canvas id='watershed'></canvas>
                                 <h4>Segmented</h4>
-                                <p>Description</p>
+                                <p>brain seperated by different regions that were determined using the watershed method.</p>
                             </div>
                         </div>
                     </div>
