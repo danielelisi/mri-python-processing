@@ -106,6 +106,7 @@ data
 
 
 # project specific ignores
-server/static/uploads/**
+server/static/uploads/*
+!server/static/uploads/empty
 .idea/
 training_data/

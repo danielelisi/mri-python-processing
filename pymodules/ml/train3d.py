@@ -47,24 +47,6 @@ def loadData(rootdir):
             else:
                 labels.append('More than 500 Days')
 
-    '''
-            if (survivalDays < 150):
-                labels.append('0-150')
-            elif (survivalDays >= 150 and survivalDays < 300):
-                labels.append('150-300')
-            elif (survivalDays >= 300 and survivalDays < 450):
-                labels.append('300-450')
-            elif (survivalDays >= 450 and survivalDays < 600):
-                labels.append('450-600')
-            else:
-                labels.append('600+')
-    print(labels.count('0-150'))
-    print(labels.count('150-300'))
-    print(labels.count('300-450'))
-    print(labels.count('450-600'))
-    print(labels.count('600+'))
-    '''
-
     print('Label 1 amount:', labels.count('Less than 250 Days'))
     print('Label 2 amount:', labels.count('250 to 500 Days'))
     print('Label 3 amount:', labels.count('250 to 500 Days'))
@@ -92,13 +74,10 @@ Change integers to one hot encoded values ex) if there are 3 total integers then
 def encodeLabels(labels):
     y = np.array(labels)
     integer_encoded = label_encoder.fit_transform(y)
-
-
     onehot_encoder = OneHotEncoder(sparse=False)
     integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
     df_y = onehot_encoder.fit_transform(integer_encoded)
     return df_y
-
 
 '''
 Parameters
