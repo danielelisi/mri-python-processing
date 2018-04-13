@@ -26,12 +26,6 @@
         h1, form {
             text-align: center;
         }
-        
-        footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-        }
 
         .img {
             width: 20%;
@@ -159,6 +153,120 @@
             display: inline-block;
             padding: 0 10px;
         }
+        
+        .file-upload1 {
+            display: block;
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        .file-upload1 .file-select1 {
+            display: block;
+            border: 2px solid red;
+            cursor: pointer;
+            height: 40px;
+            line-height: 40px;
+            text-align: left;
+            background: #FFFFFF;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .file-upload1 .file-select1 .file-select-button1 {
+            background: red;
+            padding: 0 10px;
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+            color: white;
+        }
+
+        .file-upload1 .file-select1 .file-select-name1 {
+            line-height: 40px;
+            display: inline-block;
+            padding: 0 10px;
+            color: #AAA;
+        }
+
+        .file-upload1 .file-select1:hover {
+            border-color: darkred;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload1 .file-select1:hover .file-select-button1 {
+            background: darkred;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload1.active .file-select1 {
+            border-color: #3fa46a;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload1.active .file-select1 .file-select-button1 {
+            background: #3fa46a;
+            color: #FFFFFF;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload1 .file-select1 input[type=file] {
+            z-index: 100;
+            cursor: pointer;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+        }
+
+        .file-upload1 .file-select1.file-select-disabled1 {
+            opacity: 0.65; 
+        }
+
+        .file-upload1 .file-select1.file-select-disabled:hover {
+            cursor: default;
+            display: block;
+            border: 2px solid #dce4ec;
+            color: #34495e;
+            cursor: pointer;
+            height: 40px;
+            line-height: 40px;
+            margin-top: 5px;
+            text-align: left;
+            background: #FFFFFF;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .file-upload1 .file-select1.file-select-disabled1:hover .file-select-button1 {
+            background: #dce4ec;
+            color: #666666;
+            padding: 0 10px;
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .file-upload1 .file-select1.file-select-disabled1:hover .file-select-name1 {
+            line-height: 40px;
+            display: inline-block;
+            padding: 0 10px;
+        }
     </style>
     
     <body>
@@ -225,11 +333,11 @@
                     </div>
 
                     <form class="container" enctype="multipart/form-data" action="http://localhost:5000/process_mri" method="POST">
-                        <div class="file-upload row z-depth-1">
-                            <div class="file-select">
-                                <div class="file-select-button" id="fileName">Choose File</div>
-                                <div class="file-select-name" id="noFile">No file chosen...</div> 
-                                <input type="file" accept=".zip" name="chooseFile" id="chooseFile">
+                        <div class="file-upload1 row z-depth-1">
+                            <div class="file-select1">
+                                <div class="file-select-button1" id="fileName1">Choose File</div>
+                                <div class="file-select-name1" id="noFile1">No file chosen...</div> 
+                                <input type="file" accept=".zip" name="chooseFile" id="chooseFile1">
                             </div>
                         </div>
                         
@@ -241,14 +349,6 @@
                 </div>
             </div>
         </div>
-        
-        <footer class="page-footer green">
-            <div class="footer-copyright">
-                <div class="container">
-                    Authors: Dylan Chew, Gagan Heer, Jed Iquin, Alex Lilley, Daniele Lisi, Alex Mori
-                </div>
-            </div>
-        </footer>
            
         <script>
             $('#chooseFile').bind('change', function () {
@@ -262,9 +362,29 @@
                     $("#noFile").text(filename.replace("C:\\fakepath\\", "")); 
                 }
             });
+            
+            $('#chooseFile1').bind('change', function () {
+                var filename = $("#chooseFile1").val();
+                if (/^\s*$/.test(filename)) {
+                    $(".file-upload1").removeClass('active');
+                    $("#noFile1").text("No file chosen..."); 
+                }
+                else {
+                    $(".file-upload1").addClass('active');
+                    $("#noFile1").text(filename.replace("C:\\fakepath\\", "")); 
+                }
+            });
         </script>
         
         <!--JavaScript at end of body for optimized loading-->
         <script type="text/javascript" src="js/materialize.min.js"></script>
     </body>
+    
+    <footer class="page-footer green">
+        <div class="footer-copyright">
+            <div class="container">
+                Authors: Dylan Chew, Gagan Heer, Jed Iquin, Alex Lilley, Daniele Lisi, Alex Mori
+            </div>
+        </div>
+    </footer>
 </html>
