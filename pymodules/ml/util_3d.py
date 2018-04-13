@@ -7,6 +7,7 @@
 import SimpleITK
 import numpy as np
 import sys
+import cProfile
 
 def trim_array_3d(img_array, dim=(50,50,50), thresh=50):
     '''
@@ -111,17 +112,15 @@ def get_min_max(size, img_array, thresh):
 
 if __name__ == '__main__':
 
-    '''
-    pass in an argument which is the location of mha file
-    '''
+    test = np.arange(80000).reshape(80, 20, 50)
+    test = np.pad(test, ((100,60),(40,80),(60,50)),'constant')
 
-    # try:
-    #     input_image = SimpleITK.ReadImage(sys.argv[1])
-    # except:
-    #     raise Exception('file not found')
-
-    #data = np.arange#SimpleITK.GetArrayFromImage(input_image)
-    result = reshape_and_pad(np.zeros((51,49,46)),(50,50,50))
+    # run a profiler to check statistics
+    print("#######################")
+    print(" RUNNING TRIM FUNCTION")
+    print("#######################")
+    cProfile.run('trim_array_3d(test)')
+    result = trim_array_3d(test)
     print(result.shape)
 
     # trimmed = trim_array_3d(data)
