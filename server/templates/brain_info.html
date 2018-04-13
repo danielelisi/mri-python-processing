@@ -634,37 +634,6 @@
                 reset_filters = document.getElementById('reset_filters')
                 isolate_brain = document.getElementById('isolate_brain');
 
-                filters_list = document.getElementById('filters_list');
-
-                function updatePreprocessCanvas(data,flipx,flipy) {
-                    pre_process_out.draw(data,'grayscale',flipx,flipy)
-                }
-                
-                function addToFiltersList(filter) {
-                    
-                    list = filters_list.innerHTML;
-
-                    if(list !== '') {
-                        list += ' => '
-                    }
-
-                    list += filter
-
-            
-            
-            function initPreprocessingFields() {
-
-                // init the output canvas
-                pre_process_out = document.getElementById('pre_process_out');
-                pre_process_out.draw = draw
-                
-                //add event listener to buttons
-                median_filter = document.getElementById('median_filter');
-                histo_filter = document.getElementById('histo_filter');
-                bilateral_filter = document.getElementById('bilateral_filter');
-                reset_filters = document.getElementById('reset_filters')
-                isolate_brain = document.getElementById('isolate_brain');
-
 
                 function updatePreprocessCanvas(data,flipx,flipy) {
                     pre_process_out.draw(data,'grayscale',flipx,flipy)
