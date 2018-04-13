@@ -12,12 +12,13 @@ Transform encodedPredictions to a dictionary of labeled data
 '''
 def getLabelPrediction(encodedPrediction, labels=['Less than 250 Days', '250 to 500 Days', 'More than 500 Days']):
     formattedLabels = []
-    for index in (0, len(encodedPrediction[0])):
-        formattedLabels.append["%.2f" % round((encodedPrediction[0][index] * 100), 2)]
+    numberOfLabels = len(encodedPrediction[0])
+    for index in range(0, numberOfLabels):
+        formattedLabels.append("%.2f" % round((encodedPrediction[0][index] * 100), 2))
 
     labelPrediction = {}
-    for index in (0, len(labels)):
-        labelPrediction.append[labels[index]: formattedLabels[index]]
+    for index in range(0, len(labels)):
+        labelPrediction[labels[index]] = formattedLabels[index]
 
     print(labelPrediction)
     return labelPrediction
