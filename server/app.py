@@ -4,12 +4,19 @@ here = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(here, "..", "pymodules"))
 
 from flask import Flask, render_template, request, jsonify, make_response
-from PIL import Image
 from BrainProcessor import BrainProcessor # change how this is imported
 from werkzeug.utils import secure_filename
 import numpy as np
+from flask_compress import Compress
 
-app = Flask(__name__, static_url_path='/server/static')
+compress = Compress()
+
+def start_app():
+    app = Flask(__name__, static_url_path='/server/static')
+    compress.init_app(app)
+    return app
+
+app = start_app()
 
 UPLOAD_FOLDER = os.path.join('server','static','uploads')
 IMG_FOLDER = os.path.join('server','static','img')

@@ -121,7 +121,7 @@ if __name__ == '__main__':
     #     raise Exception('file not found')
 
     #data = np.arange#SimpleITK.GetArrayFromImage(input_image)
-    result = reshape_and_pad(np.zeros((41,58,35)),(50,50,50))
+    result = reshape_and_pad(np.zeros((51,49,46)),(50,50,50))
     print(result.shape)
 
     # trimmed = trim_array_3d(data)
