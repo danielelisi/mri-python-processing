@@ -108,3 +108,4 @@ data
 # project specific ignores
 server/static/uploads/**
 .idea/
+training_data/

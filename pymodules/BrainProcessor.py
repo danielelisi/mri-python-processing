@@ -1,4 +1,8 @@
 from brain_img_processor import *
+<<<<<<< HEAD
+=======
+from random import randint
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
 import numpy as np
 
 class BrainProcessor:
@@ -7,6 +11,10 @@ class BrainProcessor:
 
         self.brain_data = None
         self.pre_process_output = None
+<<<<<<< HEAD
+=======
+        self.normalized = None
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
         self.marker = None
         self.local_gradient = None 
         self.watershed = None 
@@ -18,6 +26,10 @@ class BrainProcessor:
             'median': median
         }
         self.watershed_output = None
+<<<<<<< HEAD
+=======
+        self.tumor_info = None
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
 
     def load_mri(self, file_path):
 
@@ -36,10 +48,10 @@ class BrainProcessor:
         return True
 
     def get_data(self):
-        normalized = normalize_255(self.brain_data.data)
+        # normalized = normalize_255(self.brain_data.data)
 
         return {
-            'data': normalized,
+            'data': self.brain_data.data,
             'dim':  self.brain_data.dimensions
         }
 
@@ -58,8 +70,15 @@ class BrainProcessor:
         
         return
     def init_pre_process_output(self):
+<<<<<<< HEAD
         slice = self.brain_data.get_slice(self.current_view, self.current_index)
         self.pre_process_output = normalize_255(slice)
+=======
+        self.pre_process_output = self.brain_data.get_slice(self.current_view, self.current_index)
+        # self.pre_process_output = normalize_255(slice)
+        self.normalized = self.pre_process_output
+
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
         return
 
     def set_view_index(self, index):
@@ -78,8 +97,13 @@ class BrainProcessor:
         return
 
     def get_original_view(self):
+<<<<<<< HEAD
         slice = self.brain_data.get_slice(self.current_view, self.current_index)
         result = normalize_255(slice)
+=======
+        result = self.brain_data.get_slice(self.current_view, self.current_index)
+        # result = normalize_255(slice)
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
         return result
         
     def get_pre_process_output(self):
@@ -94,12 +118,64 @@ class BrainProcessor:
     def isolate_brain(self):
 
         self.pre_process_output = isolate_brain(self.pre_process_output)['data']
+<<<<<<< HEAD
+=======
+        self.normalized = self.pre_process_output
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
         return
 
     def apply_watershed(self):
 
         self.watershed_output = watershed_segment(self.pre_process_output)
+<<<<<<< HEAD
         return
 
     def get_watershed_output(self):
         return self.watershed_output
+=======
+        self.watershed = self.watershed_output['watershed']
+
+        unique_values = np.unique(self.watershed_output['watershed'])
+
+        color_key = {}
+        for value in unique_values:
+            color_key[value] = _generate_rand_color()
+
+        temp = self.watershed_output['watershed']
+        x, y = temp.shape
+
+        temp_watershed = []
+        for i in range(x):
+            new_row = []
+            for j in range(y):
+                new_row.append(color_key[temp[i,j]])
+            temp_watershed.append(new_row)
+
+        self.watershed_output['watershed'] = temp_watershed
+
+        return
+
+
+    def get_watershed_output(self):
+        return self.watershed_output
+
+    def detect_tumor(self, threshold):
+
+        watershed = self.watershed
+
+        self.tumor_info = detect_tumor(watershed, self.normalized, threshold)
+
+        return self.tumor_info
+
+def _generate_rand_color():
+
+    red = randint(0,255)
+    green = randint(0,255)
+    blue = randint(0,255)
+
+    return {
+        'red': red,
+        'green': green,
+        'blue': blue
+    }
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5

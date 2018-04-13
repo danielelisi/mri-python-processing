@@ -4,6 +4,7 @@ from skimage.restoration import denoise_bilateral
 from scipy import ndimage as ndi
 from skimage.filters import rank, gaussian
 from skimage.morphology import watershed, disk
+from skimage import exposure
 import numpy as np
 
 
@@ -28,7 +29,7 @@ class BrainData:
         # do some checking here to make sure it is a 3d image
 
         # get the image data from mha
-        self.data = SimpleITK.GetArrayFromImage(input_image)
+        self.data = normalize_255(SimpleITK.GetArrayFromImage(input_image))
         self.dimensions = self.data.shape
 
     def get_slice(self, profile, index):
@@ -117,13 +118,22 @@ def segment(brain_img):
 
 def get_tumor_region(label, image):
     return None
+<<<<<<< HEAD
+=======
 
 
 def normalize_255(image):
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
 
     input_data = image
    
 
+<<<<<<< HEAD
+def normalize_255(image):
+
+    input_data = image
+   
+=======
     min = np.amin(input_data)
     max = np.amax(input_data)
     
@@ -137,8 +147,64 @@ def normalize_255(image):
     return normalized
 
 
-def equalize(image):
+def equalize(image, lower_bound=5, upper_bound=95):
 
+
+    lb, ub = np.percentile(image, (lower_bound, upper_bound))
+    img_rescale = exposure.rescale_intensity(image, in_range=(lb, ub))
+
+    return img_rescale
+ 
+
+def median(data):
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5
+
+    return rank.median(data, disk(1))
+
+def bilateral(data, win_size=5, multichannel=False):
+
+    return denoise_bilateral(data, win_size=win_size, multichannel=multichannel)
+
+def watershed_segment(data):
+
+    marker = rank.gradient(data, disk(1)) < 10
+    marker = ndi.label(marker)[0]
+
+    gradient = rank.gradient(data, disk(1))
+    result = watershed(gradient, marker)
+
+    return {
+        'marker':marker,
+        'gradient': gradient,
+        'watershed': result
+    } 
+    
+
+def detect_tumor(labeled_image, original_image, threshold=150):
+
+    regions = regionprops(labeled_image, original_image)
+
+    # area of the brain
+    # mean intensity
+
+    result = np.zeros(original_image.shape,dtype=np.uint8)
+    area = 0
+
+    for region in regions:
+        if region.mean_intensity >= threshold:
+            area += region.area
+            min_row, min_col, max_row, max_col = region.bbox
+            target_area = result[min_row:max_row, min_col:max_col] 
+            result[min_row:max_row, min_col:max_col] = np.logical_or(target_area, region.image)
+
+    return {
+        'overlay': result,
+        'original': original_image,
+        'area': int(area)
+    }
+
+
+<<<<<<< HEAD
     # need to disregard 0 values
     h = np.histogram(image, bins=256)[0]
     H = np.cumsum(h) / float(np.sum(h))
@@ -168,3 +234,5 @@ def watershed_segment(data):
         'watershed': result
     } 
     
+=======
+>>>>>>> 118323614e419fe0347fdbef3568c14265f188b5

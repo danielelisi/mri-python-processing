@@ -1,94 +1,431 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MRI Tumor Detection</title>
+     <!-- Compiled and minified CSS -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
 
-<html>
-    <head>
-        <title>MHA Brain Information</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-           
-        <!-- div for axial profile -->
-        <div>
-            <h3>AXIAL</h3>
-            <canvas id="top_view"></canvas>
-            <input type="range" class="slider" id="top_view_slider">
-            <label for='top_view_index'>index</label><input type="text" id='top_view_index'/>
-            <input type='button' value='select' id='top_view_select'/>
-        </div>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        <!-- div for sagittal profile -->
-        <div>
-            <h3>SAGITTAL</h3>
-            <canvas id="side_view"></canvas>
-            <input type="range" class="slider" id="side_view_slider">
-            <label for='side_view_index'>index</label><input type="text" id='side_view_index'/>
-            <input type='button' value='select' id='side_view_select'/>
-        </div>
-
-        <!-- div for coronoal profile -->
-        <div>
-            <h3>CORONAL</h3>
-            <canvas id="front_view"></canvas>
-            <input type="range" class="slider" id="front_view_slider">
-            <label for='front_view_index'>index</label><input type="text" id='front_view_index'/>
-            <input type='button' value='select' id='front_view_select'/>
-        </div>
-
-        <fieldset>
-            <legend>Pre processing</legend>
-            <div>
-                <input type='button' value='Isolate Brain' id='isolate_brain'/>
-                <input type='button' value='Strip Skull' />
-                <input type='button' value='Reset' id='reset_filters' />
-            </div>
-            <div>
-                <input type='button' value='Bilateral Filter' id='bilateral_filter'/>
-                <input type='button' value='Histogram EQ' id='histo_filter'/>
-                <input type='button' value='Median Filter' id='median_filter'/>
-            </div>
-            <div>
-                <h4>Filters Applied</h4>
-                <div id='filters_list'></div>
-            </div>
-            <div>
-                <canvas id='pre_process_out'></canvas>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Segmentation</legend>
-            <div>
-                <input type='button' value='Apply Watershed' id='watershed_button'/>
-            </div>
-            <div>
-                <div>
-                    <h5>Marker</h5>
-                    <canvas id='marker'></canvas>
-                </div>
-                <div>
-                    <h5>Local Gradient</h5>
-                    <canvas id='gradient'></canvas>
-                </div>
-                <div>
-                    <h5>Watershed</h5>
-                    <canvas id='watershed'></canvas>
-                </div>
-            </div>
+     <!-- Compiled and minified JavaScript -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
             
-        </fieldset>
+    <style>
 
-        <fieldset>
-            <legend>Tumor Detection</legend>
-            <input type='button' value='Detect Tumor'/>
-            
-        </fieldset>
+        #toast-container {
+            top: 8vh;
+            right: 10px;
+            bottom: auto !important;
+            left:auto !important;
+        }
+    
+        #main {
+            min-height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top:0;
+            left:0;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #container {
+            width: 100vw;
+            background-color: aliceblue;
+            position: absolute;
+            top:0;
+            transition: top 0.3s ease-out; 
+
+        }
+
+        .mainDiv {
+            height: 100vh;
+            width: 100vw;
+            clear: both;
+            position: relative;
+        }
         
-        <script>
-           
+        .back {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .next {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .home {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .top {
+            position: absolute;
+            right: 10px;
+            top: 70px;
+        }
+
+        h1 {
+            margin:0px;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        input[type=button] {
+            color: white;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            height: 25px;
+        }
+
+        canvas {
+            width: 100%
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div id="main">
+
+         <!-- Modal  -->
+        <div id="my_modal" class="modal">
+            <div class="modal-content">
+            <h4>No slice selected</h4>
+            <p>Please select a slice before moving to the next part</p>
+            </div>
+        </div>
+
+
+        <a class="waves-effect waves-light btn-large blue darken-2 home" id="home">
+            <i class="material-icons left">home</i>
+            Home
+        </a>
+        <div id="container">
+            <div id="chooseSliceDiv" class="mainDiv">
+                <a class="waves-effect waves-light btn-large green darken-2 next">
+                    <i class="material-icons right">arrow_downward</i>
+                    Next: Apply Preprocessing and Denoising
+                </a>
+                 
+                <h1>1. Choose a slice</h1>
+                <!-- views-->
+                <div class="row">
+                    <div class="col s10 offset-s1">
+                        <div class="row">
+                            <div class="col s4" id="axial">
+                                <h3 style="text-align:center;">AXIAL</h3>
+                                <canvas id="top_view"></canvas>
+                                    <input type="range" class="slider" id="top_view_slider">
+                                <div class="row">
+                                    <div class="col s8">
+                                        <input class="waves-effect waves-light btn col s12" 
+                                            type='button' value='select' id='top_view_select'/>
+                                    </div>
+                                    <div class="col s4">
+                                        <input type="text" id='top_view_index'/>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- div for sagittal profile -->
+                            <div class="col s4" id="saggital">
+                                <h3 style="text-align:center;">SAGITTAL</h3>
+                                <canvas id="side_view"></canvas>
+                                <input type="range" class="slider" id="side_view_slider">
+                                <div class="row">
+                                    <div class="col s8">
+                                        <input class="waves-effect waves-light btn col s12" 
+                                            type='button' value='select' id='side_view_select'/>
+                                    </div>
+                                    <div class="col s4">
+                                        <input type="text" id='side_view_index'/>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- div for coronoal profile -->
+                            <div class="col s4" id="coronal">
+                                <h3 style="text-align:center;">CORONAL</h3>
+                                <canvas id="front_view"></canvas>
+                                <input type="range" class="slider" id="front_view_slider">
+                                <div class="row">
+                                    <div class="col s8">
+                                        <input class="waves-effect waves-light btn col s12" 
+                                            type='button' value='select' id='front_view_select'/>
+                                    </div>
+                                    <div class="col s4">
+                                        <input type="text" id='front_view_index'/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
             
-            // TODO i'd like to separate this to brain.js
-            // create a model
-            var brain_model = {
+            <div id="applyFilerDiv" class="mainDiv">
+                <h1>2. Preprocessing and Denoising</h1>
+                
+                <a class="waves-effect waves-light btn-large red darken-2 back">
+                    <i class="material-icons right">arrow_upward</i>
+                    Back: Choose a Slice
+                </a>
+
+                <a class="waves-effect waves-light btn-large green darken-2 next" id="watershed_button">
+                    <i class="material-icons right">arrow_downward</i>
+                    Next: Apply Segmentation
+                </a>
+                
+                <div class="row" style="padding-top:5vh">
+                    
+                    <div class="col s6">
+                        <div class="row">
+
+                            <h4>Preprocessing</h4>
+                            <div class="row">
+                                <div class="col s6">
+                                    <input class="waves-effect waves-light btn-large col s12" id='isolate_brain'
+                                    type='button' value='Isolate Brain'/>
+                                    <p>
+                                        Description
+                                    </p>
+                                </div>
+                                <div class="col s6">
+                                    <input class="waves-effect waves-light btn-large col s12" id='histo_filter'
+                                    type='button' value='Histogram EQ'/>
+                                    <p>
+                                        Description
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h4>Denoising</h4>
+                            <div class="row">
+                                <div class="col s6">
+                                    <input class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='bilateral_filter'
+                                    type='button' value='Bilateral Filter'/>
+                                    <p>
+                                        Description
+                                    </p>
+                                </div>
+                                <div class="col s6">
+                                    <input class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='median_filter'
+                                    type='button' value='Median Filter'/>
+                                    <p>
+                                        Description
+                                    </p>
+    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col s6">
+                        <h4 style="text-align:center">Output</h4>
+                        <div class="row">
+                            <!-- canvas goes here -->
+                            <div class="col s8 offset-s2">
+                                <canvas id='pre_process_out' style="width:auto;height:50vh;margin-left:auto;margin-right:auto;display:block;"></canvas>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <h4>
+                                Applied Filters
+                                <button style="margin-left:10px;" class="waves-effect waves-light btn green darken-3" id='reset_filters'>RESET</button>
+                            </h4>
+                            <!-- applied filters goes here -->
+                            <div id='filters_list'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="applySegmentationDiv" class="mainDiv">
+                <h1>3. Watershed Segmentation</h1>
+                
+                <a class="waves-effect waves-light btn-large red darken-2 back">
+                    <i class="material-icons right">arrow_upward</i>
+                    Back: Preprocessing and Denoising
+                </a>
+                
+                <a class="waves-effect waves-light btn-large red darken-2 top">
+                    <i class="material-icons right">keyboard_arrow_up</i>
+                    Top
+                </a>
+
+                <a class="waves-effect waves-light btn-large green darken-2 next" id="detect_tumor_button">
+                    <i class="material-icons right">arrow_downward</i>
+                    Next: Tumor Detection
+                </a>
+                <div class="row">
+                    <div class="col s8 offset-s2">
+                        <div class="row" style="padding-top:5vh">
+                            <div class="col s4" style="padding-left:20px;padding-right:20px">
+                                <canvas id='marker'></canvas>
+                                <h4>Marker</h4>
+                                <p>Description</p>
+                            </div>
+
+                            <div class="col s4" style="padding-left:20px;padding-right:20px">
+                                <canvas id='gradient'></canvas>
+                                <h4>Local Gradient</h4>
+                                <p>Description</p>
+                            </div>
+
+                            <div class="col s4" style="padding-left:20px;padding-right:20px">
+                                <canvas id='watershed'></canvas>
+                                <h4>Segmented</h4>
+                                <p>Description</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tumorDetection" class="mainDiv">
+                <h1>4. Tumor Detection</h1>
+
+                <a class="waves-effect waves-light btn-large red darken-2 back">
+                    <i class="material-icons right">arrow_upward</i>
+                    Back: Watershed Segmentation
+                </a>
+                <a class="waves-effect waves-light btn-large red darken-2 top">
+                    <i class="material-icons right">keyboard_arrow_up</i>
+                    Top
+                </a>
+
+                <div class="row" style="padding-top:10vh">
+                    <div class="col s8 offset-s2">
+                        <div class="row">
+                            <div class="col s6">
+                                <div style="text-align:center">
+                                    Threshold
+                                    <div class="input-field inline">
+                                        <input  type="text" id="threshold">
+                                        <label for="threshold">Value (0-255)</label>
+                                        
+                                    </div>
+                                    <a class="waves-effect waves-light btn green darken-2" id="set_threshold">
+                                        <i class="material-icons right">navigate_next</i>
+                                        Set
+                                    </a>
+                                </div>
+                                  
+                                <div style="width:100%;height:50vh;position:relative">
+                                    
+                                    <canvas id="tumor_canvas_base" style="height:50vh; width:auto;position: absolute; left:0;right:0;margin:auto"></canvas>
+                                    <canvas id="tumor_canvas_layer" style="height:50vh; width:auto;position: absolute; left:0;right:0;margin:auto"></canvas>
+                                    <canvas id="final_canvas" style="display:none"></canvas>
+                                </div>
+                                <p style="text-align:center">
+                                    <label>
+                                    <input id="overlay_checkbox" type="checkbox" checked="true"/>
+                                    <span style="font-weight:bold;color:black">Show Overlay</span>
+                                    </label>
+                                </p>
+                                
+                            </div>
+                            <div class="col s6">
+                                <h4>Summary</h4>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>Filename</td>
+                                            <td id="filename">NA</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Slice</td>
+                                            <td id="slice_value">NA</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Index</td>
+                                            <td id="index_value">NA</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Filters Applied</td>
+                                            <td id="filters_summary">NA</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Intensity Threshold</td>
+                                            <td id="intensity_value">NA</td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>Tumor Area</td>
+                                            <td id="tumor_area">NA</td>
+                                        </tr>
+                                        <tr>
+                                        
+                                    </tbody>
+                                </table>
+                                <div style="padding-top:5vh">
+                                    <a class="waves-effect waves-light btn-large green darken-2" id="save_image">
+                                        <i class="material-icons right">file_download</i>
+                                        Save Image
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        //globals
+        var intensity_threshold = 145;
+        
+        var nextButtons = document.getElementsByClassName("next");
+        var backButtons = document.getElementsByClassName("back");
+        var homeButton = document.getElementById("home");
+        var topButtons = document.getElementsByClassName("top");
+
+        // modal
+        var elem = document.querySelector('.modal');
+        var instance = M.Modal.init(elem);
+
+        function setView(index){
+
+            if(brain_model.currentView === null) {
+                instance.open();
+                return
+            }
+
+            console.log(`setting view for index ${index}`);
+            var container = document.getElementById("container");
+
+            container.style.top = `-${index*window.innerHeight}px`
+        }
+
+        for(let x = 0 ; x < nextButtons.length ; x++) {
+             nextButtons[x].addEventListener('click', function(){ setView(x+1);})
+             backButtons[x].addEventListener('click', function(){ setView(x)})
+        }
+
+        for(let x = 0 ; x < topButtons.length ; x++) {
+            topButtons[x].addEventListener('click', function(){ setView(0)});
+        }
+        homeButton.addEventListener("click", function(){
+            location.href = "/";
+        });
+
+
+         var brain_model = {
                 data: [],
                 currentView: null,
                 loadData: function(data) {
@@ -165,6 +502,8 @@
                         this.front.draw()
                     },
                     top: {
+                        name: 'Axial',
+                        container: document.getElementById('axial'),
                         canvas: document.getElementById('top_view'),
                         slider: document.getElementById('top_view_slider'),
                         index: document.getElementById('top_view_index'),
@@ -175,6 +514,8 @@
                     },
 
                     side: {
+                        name: 'Saggital',
+                        container: document.getElementById('saggital'),
                         canvas: document.getElementById('side_view'),
                         slider: document.getElementById('side_view_slider'),
                         index: document.getElementById('side_view_index'),
@@ -185,6 +526,8 @@
                     },
                     
                     front: {
+                        name:'Coronal',
+                        container: document.getElementById('coronal'),
                         canvas: document.getElementById('front_view'),
                         slider: document.getElementById('front_view_slider'),
                         index: document.getElementById('front_view_index'),
@@ -214,6 +557,19 @@
                     })
                     view.select.addEventListener('click', function(event){
 
+                        //reset the borders
+                        brain_model.views.top.container.style.border = "none";
+                        brain_model.views.side.container.style.border = "none";
+                        brain_model.views.front.container.style.border = "none";
+                        
+                        //reset the filters list
+                        resetFiltersList(); 
+
+                        //highlight the div
+                        view.container.style.border = '2px solid black';
+                        view.container.style.borderRadius = "15px";
+
+                        //set the pre process image
                         flipx = (view_name === 'side' || view_name ==='front')? true: false;
                         flipy = (view_name === 'side')? true : false;
                         brain_model.currentView = view_name;
@@ -223,9 +579,41 @@
                                 pre_process_out.draw(data,'grayscale', flipx, flipy)
                             })
                             .catch(err => console.log(err))
+
+                        // set the slice and index number
+
+                        var slice_value = document.getElementById('slice_value');
+                        var index_value = document.getElementById('index_value');
+
+                        slice_value.innerHTML = view.name
+                        index_value.innerHTML = view.slider.value;
+
+                        //set the overlay checkbox to true
+                        var overlay_cb = document.getElementById('overlay_checkbox');
+                        overlay_cb.checked = true;
+
+                        //reset the intensity threshold
+                        intensity_threshold = 145;
+                        var intensity_value = document.getElementById("intensity_value");
+                        var threshold = document.getElementById("threshold");
+
+                        threshold.value = intensity_threshold;
+                        intensity_value.innerHTML = intensity_threshold;
+
+                        //show toast
+                        M.toast({html: `${view.name} view at index ${view.slider.value} selected`})
+                        
                     })                  
                 }
                 
+            }
+            
+            filters_list = document.getElementById('filters_list');
+            filters_summary = document.getElementById('filters_summary');
+
+            function resetFiltersList() {
+                filters_list.innerHTML = '';
+                filters_summary.innerHTML = '';
             }
             
             // this applies to canvas
@@ -262,11 +650,51 @@
 
                     list += filter
 
-                    filters_list.innerHTML = list
-                }
+            
+            
+            function initPreprocessingFields() {
 
-                function resetFiltersList() {
-                    filters_list.innerHTML = '';
+                // init the output canvas
+                pre_process_out = document.getElementById('pre_process_out');
+                pre_process_out.draw = draw
+                
+                //add event listener to buttons
+                median_filter = document.getElementById('median_filter');
+                histo_filter = document.getElementById('histo_filter');
+                bilateral_filter = document.getElementById('bilateral_filter');
+                reset_filters = document.getElementById('reset_filters')
+                isolate_brain = document.getElementById('isolate_brain');
+
+
+                function updatePreprocessCanvas(data,flipx,flipy) {
+                    pre_process_out.draw(data,'grayscale',flipx,flipy)
+                }
+                
+                function addToFiltersList(filter) {
+                    
+                    var elem = document.createElement('div');
+                    var filters_summary = document.getElementById('filters_summary');
+
+                    if(filters_list.childNodes.length >= 1) {
+                        var arrow = document.createElement('i');
+                        arrow.className = "tiny material-icons";
+                        arrow.innerHTML = 'arrow_forward';
+                        filters_list.appendChild(arrow);
+                    }
+
+                    elem.style.display="inline-block";
+                    elem.innerHTML = filter;
+
+                    elem.style.padding = '5px';
+                    elem.style.backgroundColor = "#29b6f6";
+                    elem.style.color="white";
+                    elem.style.borderRadius = '5px';
+                    elem.style.marginBottom = '5px';
+
+
+                    filters_list.appendChild(elem)
+                    filters_summary.innerHTML = filters_list.innerHTML;
+
                 }
 
                 function requestFilter(filter) {
@@ -292,6 +720,8 @@
                 bilateral_filter.addEventListener('click', requestFilter('bilateral'))
 
                 isolate_brain.addEventListener('click', function(event){
+                    event.preventDefault();
+                    
                     postRequest('/isolateBrain')
                         .then(response=>response.json())
                         .then(data => {
@@ -310,6 +740,7 @@
                         .then(response => response.json())
                         .then(data => {
 
+                            view = brain_model.currentView;
                             flipx = (view === 'side' || view ==='front')? true: false;
                             flipy = (view === 'side')? true : false
                             
@@ -336,13 +767,13 @@
                     postRequest('/applyWatershed')
                         .then(response => response.json())
                         .then(data => {
-                            // console.log(data)
+                            console.log(data)
                             view = brain_model.currentView;
                             flipx = (view === 'side' || view ==='front')? true: false;
                             flipy = (view === 'side')? true : false;
                             marker.draw(data['marker'], 'grayscale', flipx, flipy);
                             gradient.draw(data['gradient'], 'grayscale', flipx, flipy);
-                            watershed.draw(data['watershed'], 'grayscale', flipx, flipy);
+                            watershed.draw(data['watershed'], 'RGB', flipx, flipy);
                             
                         })
                         .catch(err => console.log(err));
@@ -350,7 +781,122 @@
 
             }
 
-            function draw(img_array, type='RGB', flipx=false, flipy=false) {
+            function initTumorDetectionFields() {
+                var detect_tumor_button = document.getElementById('detect_tumor_button');
+                var tumor_canvas_base = document.getElementById('tumor_canvas_base');
+                var tumor_canvas_layer = document.getElementById('tumor_canvas_layer');
+                var overlay_cb = document.getElementById('overlay_checkbox');
+                var save_image = document.getElementById('save_image');
+                var final_canvas = document.getElementById('final_canvas');
+                tumor_canvas_base.draw = draw;
+                tumor_canvas_layer.draw = draw;
+
+                function detectTumor(threshold=145) {
+                    
+                    // var final_canvas = document.getElementById('final_canvas');
+
+                    postRequest('/detectTumor', threshold)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            view = brain_model.currentView;
+                            flipx = (view === 'side' || view ==='front')? true: false;
+                            flipy = (view === 'side')? true : false;
+
+                            // tumor_canvas.draw(data.overlay,'RGB', flipx, flipy)
+                            tumor_canvas_base.draw(data.original,'grayscale', flipx, flipy)
+                            overlay = data.overlay
+                            
+                            let result = []
+
+                            for(let x = 0 ; x < overlay.length ; x++) {
+                                let new_row = []
+                                for (let y = 0 ; y < overlay[x].length ; y++) {
+                                    
+                                    if(overlay[x][y]) {
+                                        new_row.push({
+                                            'red': 100,
+                                            'green': 0,
+                                            'blue': 0
+                                        })
+                                    }
+                                    else {
+                                        new_row.push(0)
+                                    }
+                                }
+                                result.push(new_row)
+                                
+                            }
+                            console.log(result);
+                            tumor_canvas_layer.draw(result,'RGB', flipx, flipy, 0.8)
+
+                            //update tumor area value
+                            let tumor_area = document.getElementById("tumor_area");
+                            tumor_area.innerHTML = `${data.area} px`;
+
+                            //update threshold
+                            var intensity_value = document.getElementById("intensity_value");
+                            intensity_value.innerHTML = intensity_threshold;
+
+                            //draw to final canvas
+                            final_ctx = final_canvas.getContext('2d');
+                            final_canvas.width = tumor_canvas_base.width - 1;
+                            final_canvas.height = tumor_canvas_base.height - 1;
+
+                            final_ctx.drawImage(tumor_canvas_base,0,0);
+                            final_ctx.drawImage(tumor_canvas_layer,0,0);
+
+
+                        })
+                        .catch(err => console.log(err))
+                }
+
+                detect_tumor_button.addEventListener('click', function(event) {
+                    detectTumor(intensity_threshold);
+                });
+
+                //summary table values
+                var filename = document.getElementById("filename");
+                var intensity_value = document.getElementById("intensity_value");
+                var threshold = document.getElementById("threshold");
+                var set_threshold = document.getElementById("set_threshold");
+
+                filename.innerHTML = '{{ brain.filename}}';
+                intensity_value.innerHTML = intensity_threshold;
+
+                //add event listener to checkbox
+                overlay_cb.addEventListener('click', function(event) {
+                    if(this.checked) {
+                        tumor_canvas_layer.style.visibility = 'visible';
+                        console.log('')
+                    }
+                    else {
+                        tumor_canvas_layer.style.visibility = 'hidden';
+                    }
+                })
+
+                //add event listener to threshold input box
+                threshold.value = intensity_threshold;
+                set_threshold.addEventListener('click', function(e){ 
+                    intensity_threshold = threshold.value
+                    console.log(intensity_threshold);
+                    detectTumor(intensity_threshold);
+
+                });
+
+                save_image.addEventListener('click', function(e){
+                    var image = final_canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  
+                    window.location.href=image; 
+                });
+
+            }
+
+            // this applies to canvas
+            // type could be RGB | grayscale
+            // separate this function, i could reuse this for the output view
+            // lol, flipx shoud be flipy and vice versa but im too lazy to change
+
+            function draw(img_array, type='RGB', flipx=false, flipy=false, alpha=1) {
                
                 var ctx = this.getContext('2d');
                 
@@ -375,14 +921,24 @@
                 if(type === 'grayscale') {
                     for (i=startx, x=0; i != endx; i+=stepx, x++){
                         for(j=starty, y=0; j != endy;j+=stepy, y++){
-                            var color = img_array[i][j]
+                            let color = img_array[i][j]
                             ctx.fillStyle = "rgb("+color+","+color+","+color+")";
                             ctx.fillRect(y, x, 1, 1);
                         }
                     }
                 } 
                 else if (type === 'RGB') {
-
+                                   
+                    for (i=startx, x=0; i != endx; i+=stepx, x++){
+                        for(j=starty, y=0; j != endy;j+=stepy, y++){
+                            let color = img_array[i][j]
+                            if(color !== 0)
+                            {
+                                ctx.fillStyle = "rgba("+color['red']+","+color['green']+","+color['blue']+","+alpha+")";
+                                ctx.fillRect(y, x, 1, 1);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -398,20 +954,26 @@
                 })
             }
             
+            function showMainWindow() {
+                var mainWindow = document.getElementById("main");
+                mainWindow.style.opacity=1;
+            }
             function main(){
 
                 data = {{brain.data}};
                 dim = {{brain.dim}};
-                
                 brain_model.init();
                 brain_model.loadData(data);
                 
                 initPreprocessingFields();
                 initSegmentationFields();
+                initTumorDetectionFields();
+
+                showMainWindow()
             }
            
             main();
 
-        </script>
-    </body>
- </html>
+    </script>
+</body>
+</html>
