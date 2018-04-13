@@ -1,23 +1,27 @@
 body {
-    position: relative;
     margin: 0;
-    justify-content: center;
-    align-content: center;
 }
 
-#display {
-    width: 100vw;
-    height: 100vh;
-    background-color: #555;
+input[type=button] {
+    color: white;
+    font-weight: bold;
 }
 
-#upload {
-    position: absolute;
-    margin: auto;
-    top: 0; bottom: 0;
-    left: 0; right: 0;
-    width: 30%;
-    height: 50%;
+h1 {
+    text-align: center;
+}
+
+form {
+    text-align: center;
+}
+
+.img {
+    width: 20%;
+    border-radius: 50%;
+}
+
+.card-title, .card {
+    text-align: center;
 }
 
 .file-upload {
@@ -29,8 +33,7 @@ body {
 
 .file-upload .file-select {
     display: block;
-    border: 2px solid #333;
-    color: #AAA;
+    border: 2px solid red;
     cursor: pointer;
     height: 40px;
     line-height: 40px;
@@ -41,17 +44,19 @@ body {
 }
 
 .file-upload .file-select .file-select-button {
-    background: #333;
+    background: red;
     padding: 0 10px;
     display: inline-block;
     height: 40px;
     line-height: 40px;
+    color: white;
 }
 
 .file-upload .file-select .file-select-name {
     line-height: 40px;
     display: inline-block;
     padding: 0 10px;
+    color: #AAA;
 }
 
 .file-upload .file-select:hover {
@@ -132,22 +137,4 @@ body {
     line-height: 40px;
     display: inline-block;
     padding: 0 10px;
-}
-
-#submit {
-    position: relative;
-    margin-top: 30%;
-    display: block;
-    font-family: sans-serif;
-    color: #AAA;
-    background-color: #333;
-    border-width: 0;
-    padding: 2% 20%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#submit:hover {
-    background-color: #222;
-    color: #CCC;
 }

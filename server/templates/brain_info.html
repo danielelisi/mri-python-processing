@@ -615,6 +615,40 @@
                 filters_list.innerHTML = '';
                 filters_summary.innerHTML = '';
             }
+            
+            // this applies to canvas
+            // type could be RGB | grayscale
+            // separate this function, i could reuse this for the output view
+            // lol, flipx shoud be flipy and vice versa but im too lazy to change
+            
+            function initPreprocessingFields() {
+
+                // init the output canvas
+                pre_process_out = document.getElementById('pre_process_out');
+                pre_process_out.draw = draw
+                
+                //add event listener to buttons
+                median_filter = document.getElementById('median_filter');
+                histo_filter = document.getElementById('histo_filter');
+                bilateral_filter = document.getElementById('bilateral_filter');
+                reset_filters = document.getElementById('reset_filters')
+                isolate_brain = document.getElementById('isolate_brain');
+
+                filters_list = document.getElementById('filters_list');
+
+                function updatePreprocessCanvas(data,flipx,flipy) {
+                    pre_process_out.draw(data,'grayscale',flipx,flipy)
+                }
+                
+                function addToFiltersList(filter) {
+                    
+                    list = filters_list.innerHTML;
+
+                    if(list !== '') {
+                        list += ' => '
+                    }
+
+                    list += filter
 
             
             
@@ -874,7 +908,6 @@
                 var endy = (flipy)? 0 : img_array[0].length -1;
                 var stepy = (flipy)? -1 : 1;
 
-
                 var imageWidth = img_array[0].length
                 var imageHeight = img_array.length
                 // change the size of the canvase depending on image array
@@ -929,7 +962,6 @@
 
                 data = {{brain.data}};
                 dim = {{brain.dim}};
-
                 brain_model.init();
                 brain_model.loadData(data);
                 

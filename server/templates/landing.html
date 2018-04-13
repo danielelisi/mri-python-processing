@@ -1,26 +1,254 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>MRI Project</title>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/landing.css') }}"/>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>MRI Tumor Detection</title>
+
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     </head>
     
+    <style>
+        body {
+            margin: 0;
+        }
+
+        input[type=button] {
+            color: white;
+            font-weight: bold;
+        }
+
+        h1, form {
+            text-align: center;
+        }
+        
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .img {
+            width: 20%;
+            border-radius: 50%;
+        }
+
+        .card-title, .card {
+            text-align: center;
+        }
+        
+        .card-title {
+            font-weight: bolder !important;
+        }
+
+        .file-upload {
+            display: block;
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        .file-upload .file-select {
+            display: block;
+            border: 2px solid red;
+            cursor: pointer;
+            height: 40px;
+            line-height: 40px;
+            text-align: left;
+            background: #FFFFFF;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .file-upload .file-select .file-select-button {
+            background: red;
+            padding: 0 10px;
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+            color: white;
+        }
+
+        .file-upload .file-select .file-select-name {
+            line-height: 40px;
+            display: inline-block;
+            padding: 0 10px;
+            color: #AAA;
+        }
+
+        .file-upload .file-select:hover {
+            border-color: darkred;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload .file-select:hover .file-select-button {
+            background: darkred;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload.active .file-select {
+            border-color: #3fa46a;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload.active .file-select .file-select-button {
+            background: #3fa46a;
+            color: #FFFFFF;
+            transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+        }
+
+        .file-upload .file-select input[type=file] {
+            z-index: 100;
+            cursor: pointer;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+        }
+
+        .file-upload .file-select.file-select-disabled {
+            opacity: 0.65; 
+        }
+
+        .file-upload .file-select.file-select-disabled:hover {
+            cursor: default;
+            display: block;
+            border: 2px solid #dce4ec;
+            color: #34495e;
+            cursor: pointer;
+            height: 40px;
+            line-height: 40px;
+            margin-top: 5px;
+            text-align: left;
+            background: #FFFFFF;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .file-upload .file-select.file-select-disabled:hover .file-select-button {
+            background: #dce4ec;
+            color: #666666;
+            padding: 0 10px;
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .file-upload .file-select.file-select-disabled:hover .file-select-name {
+            line-height: 40px;
+            display: inline-block;
+            padding: 0 10px;
+        }
+    </style>
+    
     <body>
-        <div id="display">
-            <form id='upload' enctype="multipart/form-data" action="http://localhost:5000/process_mri" method="POST">
-                <div class="file-upload">
-                    <div class="file-select">
-                        <div class="file-select-button" id="fileName">Choose File</div>
-                        <div class="file-select-name" id="noFile">No file chosen...</div> 
-                        <input type="file" accept=".mha" name="chooseFile" id="chooseFile">
+        <div id="display" class="container">
+            <div class="row">
+                <h1 style="font-weight: bolder;">
+                MRI Tumor Detection
+                </h1>
+            </div>
+            
+            <div class="row">
+                <div class="card col s5 z-depth-1">
+                    <br>
+                    
+                    <div class="card-title">
+                        Image Processing
                     </div>
+                        
+                    <br><img src="{{ url_for('static', filename='img/color.jpg') }}" class="img z-depth-2"/><br>
+                    
+                    <div class="card-content">
+                        <p>
+                            blah blah blah blah blah blah blah blah
+                            blah blah blah blah blah blah blah blah
+                            blah blah blah blah blah blah blah blah
+                            blah blah blah blah blah blah blah blah
+                        </p>
+                    </div>
+
+                    <form class="container" enctype="multipart/form-data" action="http://localhost:5000/process_mri" method="POST">
+                        <div class="file-upload row z-depth-1">
+                            <div class="file-select">
+                                <div class="file-select-button" id="fileName">Choose File</div>
+                                <div class="file-select-name" id="noFile">No file chosen...</div> 
+                                <input type="file" accept=".mha" name="chooseFile" id="chooseFile">
+                            </div>
+                        </div>
+
+                        <button type="submit" value="Load" class="row waves-effect waves-light btn-small green darken-2">
+                            Load
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </form>
                 </div>
-                <input id="submit" type="submit" value="Load">
-            </form>
+                
+                <div class="col s2"></div>
+                
+                <div class="card col s5 z-depth-1">
+                    <br>
+                    
+                    <div class="card-title">
+                        Machine Learning
+                    </div>
+                    
+                    <br><img src="{{ url_for('static', filename='img/neural.jpg') }}" class="img z-depth-2"/><br>
+
+                    <div class="card-content">
+                        <p>
+                            blah blah blah blah blah blah blah blah
+                            blah blah blah blah blah blah blah blah
+                            blah blah blah blah blah blah blah blah
+                            blah blah blah blah blah blah blah blah
+                        </p>
+                    </div>
+
+                    <form class="container" enctype="multipart/form-data" action="http://localhost:5000/process_mri" method="POST">
+                        <div class="file-upload row z-depth-1">
+                            <div class="file-select">
+                                <div class="file-select-button" id="fileName">Choose File</div>
+                                <div class="file-select-name" id="noFile">No file chosen...</div> 
+                                <input type="file" accept=".zip" name="chooseFile" id="chooseFile">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" value="Load" class="row waves-effect waves-light btn-small green darken-2">
+                            Load
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
+        
+        <footer class="page-footer green">
+            <div class="footer-copyright">
+                <div class="container">
+                    Authors: Dylan Chew, Gagan Heer, Jed Iquin, Alex Lilley, Daniele Lisi, Alex Mori
+                </div>
+            </div>
+        </footer>
            
         <script>
             $('#chooseFile').bind('change', function () {
@@ -35,5 +263,8 @@
                 }
             });
         </script>
+        
+        <!--JavaScript at end of body for optimized loading-->
+        <script type="text/javascript" src="js/materialize.min.js"></script>
     </body>
 </html>

@@ -20,7 +20,7 @@ app = start_app()
 
 UPLOAD_FOLDER = os.path.join('server','static','uploads')
 IMG_FOLDER = os.path.join('server','static','img')
-ALLOWED_EXTENSIONS = set(['mha', 'nii', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['mha', 'nii'])
 
 brain_processor = BrainProcessor()
 
