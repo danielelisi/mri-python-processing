@@ -8,6 +8,7 @@ from BrainProcessor import BrainProcessor # change how this is imported
 from werkzeug.utils import secure_filename
 import numpy as np
 from flask_compress import Compress
+import msgpack
 
 compress = Compress()
 
