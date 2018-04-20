@@ -272,7 +272,7 @@ function initPreprocessingFields() {
         elem.style.marginBottom = '5px';
 
 
-        filters_list.appendChild(elem)
+        filters_list.appendChild(elem);
         filters_summary.innerHTML = filters_list.innerHTML;
 
     }
@@ -289,7 +289,7 @@ function initPreprocessingFields() {
                     flipx = (view === 'side' || view ==='front')? true: false;
                     flipy = (view === 'side')? true : false;
                     updatePreprocessCanvas(data, flipx, flipy);
-                    addToFiltersList(this.value);
+                    addToFiltersList(this.innerHTML);
                 })
                 .catch(err => console.log(err));
             console.log(filter)

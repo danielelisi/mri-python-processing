@@ -45,14 +45,15 @@
                 <div class="row">
                     <div class="col s10 offset-s1">
                         <div class="row">
+
+                            <!-- div for axial profile -->
                             <div class="col s4" id="axial">
                                 <h3 style="text-align:center;">AXIAL</h3>
                                 <canvas id="top_view"></canvas>
                                     <input type="range" class="slider" id="top_view_slider">
                                 <div class="row">
                                     <div class="col s8">
-                                        <input class="waves-effect waves-light btn col s12" 
-                                            type='button' value='select' id='top_view_select'/>
+                                        <button id="top_view_select" class="waves-effect waves-light btn col s12">select</button>
                                     </div>
                                     <div class="col s4">
                                         <input type="text" id='top_view_index'/>
@@ -67,8 +68,7 @@
                                 <input type="range" class="slider" id="side_view_slider">
                                 <div class="row">
                                     <div class="col s8">
-                                        <input class="waves-effect waves-light btn col s12" 
-                                            type='button' value='select' id='side_view_select'/>
+                                        <button class="waves-effect waves-light btn col s12" id='side_view_select'>select</button>
                                     </div>
                                     <div class="col s4">
                                         <input type="text" id='side_view_index'/>
@@ -83,8 +83,7 @@
                                 <input type="range" class="slider" id="front_view_slider">
                                 <div class="row">
                                     <div class="col s8">
-                                        <input class="waves-effect waves-light btn col s12" 
-                                            type='button' value='select' id='front_view_select'/>
+                                        <button class="waves-effect waves-light btn col s12" id='front_view_select'>select</button>
                                     </div>
                                     <div class="col s4">
                                         <input type="text" id='front_view_index'/>
@@ -118,15 +117,13 @@
                             <h4>Preprocessing</h4>
                             <div class="row">
                                 <div class="col s6">
-                                    <input class="waves-effect waves-light btn-large col s12" id='isolate_brain'
-                                    type='button' value='Isolate Brain'/>
+                                    <button class="waves-effect waves-light btn-large col s12" id='isolate_brain'>Isolate Brain</button>
                                     <p>
                                         this takes the selected image and removes the black background. it makes it easier to see the brain and helps with the other processing functions.
                                     </p>
                                 </div>
                                 <div class="col s6">
-                                    <input class="waves-effect waves-light btn-large col s12" id='histo_filter'
-                                    type='button' value='Histogram EQ'/>
+                                    <button class="waves-effect waves-light btn-large col s12" id='histo_filter'>Histogram EQ</button>
                                     <p>
                                         this adjusts the image light intensity to enhance contrast. makes image processing easier by making the regions more discernible. this may increase intensity of irrelevant information in image.
                                     </p>
@@ -137,15 +134,13 @@
                             <h4>Denoising</h4>
                             <div class="row">
                                 <div class="col s6">
-                                    <input class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='bilateral_filter'
-                                    type='button' value='Bilateral Filter'/>
+                                    <button class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='bilateral_filter'>Bilateral Filter</button>
                                     <p>
                                         this replaces the light intensity values of the image with weighted averages using nearby pixels. this reduces the number of regions that will be detected in processing making tumor easier to detect. can potentially add extra information to image that was not there.
                                     </p>
                                 </div>
                                 <div class="col s6">
-                                    <input class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='median_filter'
-                                    type='button' value='Median Filter'/>
+                                    <button class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='median_filter'>Median Filter</button>
                                     <p>
                                         this replaces the light intensity values of the image with the median value using nearby pixels. this is done to remove noise while preserving edge details for the image.
                                     </p>
