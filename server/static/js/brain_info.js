@@ -1,6 +1,6 @@
 //globals
 var intensity_threshold = 145;
-        
+var real_filename;
 var nextButtons = document.getElementsByClassName("next");
 var backButtons = document.getElementsByClassName("back");
 var homeButton = document.getElementById("home");
@@ -441,7 +441,7 @@ function initTumorDetectionFields() {
     var threshold = document.getElementById("threshold");
     var set_threshold = document.getElementById("set_threshold");
 
-    filename.innerHTML = '{{ brain.filename}}';
+    filename.innerHTML = real_filename;
     intensity_value.innerHTML = intensity_threshold;
 
     //add event listener to checkbox

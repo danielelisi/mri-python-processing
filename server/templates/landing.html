@@ -275,6 +275,10 @@
             display: inline-block;
             padding: 0 10px;
         }
+
+        .desc {
+            height: 100px
+        }
     </style>
     
     <body>
@@ -297,8 +301,8 @@
                     <br><img src="{{ url_for('static', filename='img/color.jpg') }}" class="img z-depth-2"/><br>
                     
                     <div class="card-content">
-                        <p>
-                            This Works 😎
+                        <p class='desc'>
+                            This process shows some image processing techniques to detect tumor in one slice of the brain. Upload a <b>Flair</b> type MRI scan in .mha format to continue
                         </p>
                     </div>
 
@@ -330,8 +334,10 @@
                     <br><img src="{{ url_for('static', filename='img/neural.jpg') }}" class="img z-depth-2"/><br>
 
                     <div class="card-content">
-                        <p>
-                            This might not be accurate 😱
+                        <p class='desc'>
+                            This uses Machine Learning that isolates the tumor region from 4 MRI scan types: 
+                            <b>Flair, T1, T1c, and T2</b>. To continue, upload a zip file that contains the four scan types. 
+                            Put <b>Flair, T1, T1c, and T2</b> in their corresponding filenames
                         </p>
                     </div>
 
