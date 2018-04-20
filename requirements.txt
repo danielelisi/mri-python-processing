@@ -20,6 +20,7 @@ Markdown==2.6.11
 MarkupSafe==1.0
 matplotlib==2.1.2
 mccabe==0.6.1
+msgpack==0.5.6
 networkx==2.1
 nibabel==2.2.1
 NiftyNet==0.2.2
