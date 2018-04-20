@@ -340,12 +340,12 @@
                         </p>
                     </div>
 
-                    <form class="container" enctype="multipart/form-data" action="/process_mri" method="POST">
+                    <form class="container" enctype="multipart/form-data" action="http://52.36.176.222:5000/upload" method="POST">
                         <div class="file-upload1 row z-depth-1">
                             <div class="file-select1">
                                 <div class="file-select-button1" id="fileName1">Choose File</div>
                                 <div class="file-select-name1" id="noFile1">No file chosen...</div> 
-                                <input type="file" accept=".zip" name="chooseFile" id="chooseFile1">
+                                <input type="file" accept=".zip" name="file" id="chooseFile1">
                             </div>
                         </div>
                         
@@ -384,8 +384,9 @@
             });
         </script>
         
-        <!--JavaScript at end of body for optimized loading-->
-        <script type="text/javascript" src="js/materialize.min.js"></script>
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+            
     </body>
     
     <footer class="page-footer green">
