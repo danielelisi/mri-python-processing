@@ -118,14 +118,14 @@
                             <div class="row">
                                 <div class="col s6">
                                     <button class="waves-effect waves-light btn-large col s12" id='isolate_brain'>Isolate Brain</button>
-                                    <p>
-                                        this takes the selected image and removes the black background. it makes it easier to see the brain and helps with the other processing functions.
+                                    <p class='desc'>
+                                        This takes the selected image and removes the black background. it makes it easier to see the brain and helps with the other processing functions.
                                     </p>
                                 </div>
                                 <div class="col s6">
                                     <button class="waves-effect waves-light btn-large col s12" id='histo_filter'>Histogram EQ</button>
-                                    <p>
-                                        this adjusts the image light intensity to enhance contrast. makes image processing easier by making the regions more discernible. this may increase intensity of irrelevant information in image.
+                                    <p class='desc'> 
+                                        This adjusts the image light intensity to enhance contrast. makes image processing easier by making the regions more discernible. this may increase intensity of irrelevant information in image.
                                     </p>
                                 </div>
                             </div>
@@ -135,14 +135,14 @@
                             <div class="row">
                                 <div class="col s6">
                                     <button class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='bilateral_filter'>Bilateral Filter</button>
-                                    <p>
-                                        this replaces the light intensity values of the image with weighted averages using nearby pixels. this reduces the number of regions that will be detected in processing making tumor easier to detect. can potentially add extra information to image that was not there.
+                                    <p class='desc'>
+                                        This replaces the light intensity values of the image with weighted averages using nearby pixels. this reduces the number of regions that will be detected in processing making tumor easier to detect. can potentially add extra information to image that was not there.
                                     </p>
                                 </div>
                                 <div class="col s6">
                                     <button class="waves-effect waves-light btn-large col s12 light-blue lighten-1" id='median_filter'>Median Filter</button>
-                                    <p>
-                                        this replaces the light intensity values of the image with the median value using nearby pixels. this is done to remove noise while preserving edge details for the image.
+                                    <p class='desc'>
+                                        This replaces the light intensity values of the image with the median value using nearby pixels. this is done to remove noise while preserving edge details for the image.
                                     </p>
     
                                 </div>
@@ -193,19 +193,19 @@
                             <div class="col s4" style="padding-left:20px;padding-right:20px">
                                 <canvas id='marker'></canvas>
                                 <h4>Marker</h4>
-                                <p>the central points of the regions of the brain. used as a start point in determining the seperate regions</p>
+                                <p>The central points of the regions of the brain. used as a start point in determining the seperate regions</p>
                             </div>
 
                             <div class="col s4" style="padding-left:20px;padding-right:20px">
                                 <canvas id='gradient'></canvas>
                                 <h4>Local Gradient</h4>
-                                <p>the area in which the regions of the brain meet each other.</p>
+                                <p>The area in which the regions of the brain meet each other.</p>
                             </div>
 
                             <div class="col s4" style="padding-left:20px;padding-right:20px">
                                 <canvas id='watershed'></canvas>
                                 <h4>Segmented</h4>
-                                <p>brain seperated by different regions that were determined using the watershed method.</p>
+                                <p>Brain seperated by different regions that were determined using the watershed method.</p>
                             </div>
                         </div>
                     </div>
@@ -312,11 +312,11 @@
             dim = {{brain.dim}};
             brain_model.init();
             brain_model.loadData(data);
-            
+            real_filename = "{{ brain.filename }}"
             initPreprocessingFields();
             initSegmentationFields();
             initTumorDetectionFields();
-
+            
             showMainWindow()
         }
         
